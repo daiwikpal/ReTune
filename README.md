@@ -1,6 +1,6 @@
-# NYC Precipitation Prediction Model
+# NYC Precipitation Data Collection
 
-This project collects weather data from multiple sources to train an LSTM model for predicting monthly precipitation in New York City.
+This project collects weather data from multiple sources to train an LSTM model for predicting monthly precipitation in New York City, which will be used for a final meta model and eventually be integrated into a sytem to place weather event bets on Kalshi. 
 
 ## Data Sources
 

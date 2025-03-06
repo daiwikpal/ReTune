@@ -108,12 +108,30 @@ class DataProcessor:
         
         # Add forecast data if provided
         if forecast_data is not None and not forecast_data.empty:
-            # Ensure no duplicate dates
-            forecast_data = forecast_data[~forecast_data["date"].isin(data["date"])]
+            # Check if both DataFrames have the 'date' column
+            if 'date' in forecast_data.columns and 'date' in data.columns:
+                # Ensure no duplicate dates
+                forecast_data = forecast_data[~forecast_data["date"].isin(data["date"])]
+            else:
+                # Log warning if 'date' column is missing
+                logger.warning("'date' column missing in either historical_data or forecast_data. "
+                              "Skipping duplicate date filtering.")
+                # If 'date' is missing in forecast_data, try to create it from index if it's a DatetimeIndex
+                if 'date' not in forecast_data.columns and isinstance(forecast_data.index, pd.DatetimeIndex):
+                    forecast_data = forecast_data.reset_index().rename(columns={'index': 'date'})
+                # If 'date' is missing in data, try to create it from index if it's a DatetimeIndex
+                if 'date' not in data.columns and isinstance(data.index, pd.DatetimeIndex):
+                    data = data.reset_index().rename(columns={'index': 'date'})
+                    
+            # Concatenate the data
             data = pd.concat([data, forecast_data], ignore_index=True)
         
-        # Sort by date
-        data = data.sort_values("date")
+        # Ensure 'date' column exists before sorting
+        if 'date' in data.columns:
+            # Sort by date
+            data = data.sort_values("date")
+        else:
+            logger.warning("'date' column not found in combined data. Cannot sort by date.")
         
         # Fill missing values
         data = self._fill_missing_values(data)
@@ -279,16 +297,20 @@ class DataProcessor:
         # Make a copy to avoid modifying the original
         featured_data = data.copy()
         
-        # Extract date components
-        featured_data["year"] = featured_data["date"].dt.year
-        featured_data["month"] = featured_data["date"].dt.month
-        featured_data["day"] = featured_data["date"].dt.day
-        featured_data["dayofyear"] = featured_data["date"].dt.dayofyear
-        
-        # Create season feature (1=Winter, 2=Spring, 3=Summer, 4=Fall)
-        featured_data["season"] = featured_data["month"].apply(
-            lambda x: 1 if x in [12, 1, 2] else 2 if x in [3, 4, 5] else 3 if x in [6, 7, 8] else 4
-        )
+        # Check if date column exists
+        if 'date' in featured_data.columns:
+            # Extract date components
+            featured_data["year"] = featured_data["date"].dt.year
+            featured_data["month"] = featured_data["date"].dt.month
+            featured_data["day"] = featured_data["date"].dt.day
+            featured_data["dayofyear"] = featured_data["date"].dt.dayofyear
+            
+            # Create season feature (1=Winter, 2=Spring, 3=Summer, 4=Fall)
+            featured_data["season"] = featured_data["month"].apply(
+                lambda x: 1 if x in [12, 1, 2] else 2 if x in [3, 4, 5] else 3 if x in [6, 7, 8] else 4
+            )
+        else:
+            logger.warning("'date' column not found. Cannot create date-based features.")
         
         # Create temperature range feature
         if "temperature_max" in featured_data.columns and "temperature_min" in featured_data.columns:
