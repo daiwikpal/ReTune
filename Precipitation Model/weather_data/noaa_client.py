@@ -73,121 +73,96 @@ class NOAAClient:
         """
         endpoint = f"{self.base_url}/datatypes"
         params = {
-            "datasetid": config.NOAA_DATASET_ID,
-            "limit": 1000,
-        }
-        
+                "datasetid": config.NOAA_DATASET_ID,
+                "limit": 1000,
+            }
+            
         response = self._make_request(endpoint, params)
         return response.get("results", [])
-    
-    def get_daily_data(self, 
-                       start_date: str, 
-                       end_date: str, 
-                       station_id: str = None,
-                       data_types: List[str] = None) -> pd.DataFrame:
-        """
-        Get daily weather data for a specific time period and station.
         
-        Args:
-            start_date: Start date in YYYY-MM-DD format
-            end_date: End date in YYYY-MM-DD format
-            station_id: ID of the weather station
-            data_types: List of data types to retrieve
-            
-        Returns:
-            DataFrame with daily weather data
-        """
+    def get_daily_data(self, start_date: str, end_date: str, station_id: str = None, data_types: List[str] = None) -> pd.DataFrame:
         if not station_id:
             station_id = config.NOAA_STATION_ID
-            
+
         if not data_types:
-            # Default data types for precipitation prediction
-            data_types = [
-                "PRCP",  # Precipitation
-                "TMAX",  # Maximum temperature
-                "TMIN",  # Minimum temperature
-                "TAVG",  # Average temperature
-                "AWND",  # Average wind speed
-                "SNOW",  # Snowfall
-                "SNWD",  # Snow depth
-            ]
-        
-        endpoint = f"{self.base_url}/data"
-        params = {
-            "datasetid": config.NOAA_DATASET_ID,
-            "stationid": station_id,
-            "startdate": start_date,
-            "enddate": end_date,
-            "datatypeid": ",".join(data_types),
-            "units": "standard",
-            "limit": 1000,
-        }
-        
+            data_types = ["PRCP", "TMAX", "TMIN", "TAVG", "AWND"]
+
+        # valid_types = [dt['id'] for dt in self.get_data_types()]
+        valid_types = ['PRCP', 'TMAX', 'TMIN', 'TAVG', 'AWND']
+        unsupported = [dt for dt in data_types if dt not in valid_types]
+        data_types = [dt for dt in data_types if dt in valid_types]
+        if unsupported:
+            logger.warning(f"Skipping unsupported datatypes: {unsupported}")
+
         all_results = []
-        offset = 0
-        
-        while True:
-            params["offset"] = offset
-            response = self._make_request(endpoint, params)
-            results = response.get("results", [])
-            
-            if not results:
-                break
-                
-            all_results.extend(results)
-            
-            if len(results) < 1000:
-                break
-                
-            offset += 1000
-            time.sleep(0.5)  # Respect rate limits
-        
-        # Process the results into a DataFrame
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+        current = start
+
+        while current <= end:
+            chunk_start = current
+            chunk_end = min(chunk_start + timedelta(days=29), end)  # 30-day chunk
+
+            params = {
+                "datasetid": config.NOAA_DATASET_ID,
+                "stationid": station_id,
+                "startdate": chunk_start.strftime("%Y-%m-%d"),
+                "enddate": chunk_end.strftime("%Y-%m-%d"),
+                "datatypeid": ",".join(data_types),
+                "units": "standard",
+                "limit": 1000,
+                "offset": 0,
+            }
+            logger.info(f"Fetching NOAA data from {params['startdate']} to {params['enddate']}...")
+            chunk_results = []
+
+            while True:
+                params["offset"] = len(chunk_results)
+                response = self._make_request(f"{self.base_url}/data", params)
+                results = response.get("results", [])
+                if not results:
+                    break
+                chunk_results.extend(results)
+                if len(results) < 1000:
+                    break
+                time.sleep(2)
+
+            all_results.extend(chunk_results)
+            current = chunk_end + timedelta(days=1)
+
         if not all_results:
-            logger.warning(f"No data found for the specified parameters: {params}")
+            logger.warning(f"No data found for the specified parameters between {start_date} and {end_date}.")
             return pd.DataFrame()
-        
-        # Convert to DataFrame and pivot to get dates as rows and data types as columns
+
         df = pd.DataFrame(all_results)
-        
         if df.empty:
             return df
-            
-        # Pivot the data to have dates as rows and data types as columns
+
         pivot_df = df.pivot_table(
-            index="date", 
-            columns="datatype", 
+            index="date",
+            columns="datatype",
             values="value",
             aggfunc="first"
         ).reset_index()
-        
-        # Convert date to datetime
+
         pivot_df["date"] = pd.to_datetime(pivot_df["date"])
-        
-        # Sort by date
         pivot_df = pivot_df.sort_values("date")
-        
-        # Convert data types to appropriate numeric types
+
         for col in pivot_df.columns:
             if col != "date":
                 pivot_df[col] = pd.to_numeric(pivot_df[col], errors="coerce")
-                
-        # Convert units if needed
+
         if "PRCP" in pivot_df.columns:
-            # NOAA PRCP is in tenths of mm, convert to inches
             pivot_df["PRCP"] = pivot_df["PRCP"] / 254.0
-            
         if "TMAX" in pivot_df.columns:
-            # NOAA temperature is in tenths of degrees C, convert to F
             pivot_df["TMAX"] = (pivot_df["TMAX"] / 10.0) * 9/5 + 32
-            
         if "TMIN" in pivot_df.columns:
             pivot_df["TMIN"] = (pivot_df["TMIN"] / 10.0) * 9/5 + 32
-            
         if "TAVG" in pivot_df.columns:
             pivot_df["TAVG"] = (pivot_df["TAVG"] / 10.0) * 9/5 + 32
-        
+
         return pivot_df
+
     
     def get_monthly_precipitation(self, 
                                  start_date: str, 
@@ -209,20 +184,12 @@ class NOAAClient:
         if daily_data.empty:
             return pd.DataFrame()
         
-        # Create year and month columns
+        #year and month columns
         daily_data["year"] = daily_data["date"].dt.year
         daily_data["month"] = daily_data["date"].dt.month
-        
-        # Group by year and month and sum precipitation
         monthly_data = daily_data.groupby(["year", "month"])["PRCP"].sum().reset_index()
-        
-        # Create a date column with the first day of each month
         monthly_data["date"] = pd.to_datetime(monthly_data[["year", "month"]].assign(day=1))
-        
-        # Rename PRCP to precipitation for clarity
         monthly_data = monthly_data.rename(columns={"PRCP": "precipitation"})
-        
-        # Select and order columns
         monthly_data = monthly_data[["date", "year", "month", "precipitation"]]
         
         return monthly_data
@@ -242,9 +209,8 @@ class NOAAClient:
             response = requests.get(endpoint, headers=self.headers, params=params)
             
             if response.status_code == 429:
-                # Rate limited, wait and retry
-                logger.warning("Rate limited by NOAA API. Waiting 5 seconds...")
-                time.sleep(5)
+                logger.warning("Rate limited by NOAA API.")
+                time.sleep(5) # wait 5 seconds because of rate lim!
                 return self._make_request(endpoint, params)
                 
             response.raise_for_status()
@@ -273,9 +239,9 @@ if __name__ == "__main__":
     client = NOAAClient()
     
     # Get data for Central Park, NY for 2022
-    data = client.get_daily_data("2022-01-01", "2022-12-31")
+    data = client.get_daily_data("2022-01-01", "2022-01-10")
     print(data.head())
     
-    # Get monthly precipitation totals
+    #Get monthly precipitation totals
     monthly_data = client.get_monthly_precipitation("2020-01-01", "2022-12-31")
     print(monthly_data.head())
