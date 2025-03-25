@@ -60,7 +60,6 @@ class DataProcessor:
         
         # Get NCEI hourly data aggregated to daily
         logger.info("Fetching NCEI hourly data...")
-        # For NCEI, we'll use a shorter time period to avoid excessive API calls
         ncei_start = datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=365)
         ncei_start_str = ncei_start.strftime("%Y-%m-%d")
         ncei_data = self.ncei_client.get_daily_aggregated_data(ncei_start_str, end_date)
@@ -85,7 +84,6 @@ class DataProcessor:
             
         logger.info(f"Collecting forecast data for the next {days} days")
         
-        # Get OpenWeatherMap forecast
         forecast_data = self.openweather_client.get_forecast(days=days)
         
         return forecast_data
@@ -103,14 +101,10 @@ class DataProcessor:
         Returns:
             DataFrame with prepared data
         """
-        # Make a copy to avoid modifying the original
         data = historical_data.copy()
         
-        # Add forecast data if provided
         if forecast_data is not None and not forecast_data.empty:
-            # Check if both DataFrames have the 'date' column
             if 'date' in forecast_data.columns and 'date' in data.columns:
-                # Ensure no duplicate dates
                 forecast_data = forecast_data[~forecast_data["date"].isin(data["date"])]
             else:
                 # Log warning if 'date' column is missing
@@ -123,23 +117,16 @@ class DataProcessor:
                 if 'date' not in data.columns and isinstance(data.index, pd.DatetimeIndex):
                     data = data.reset_index().rename(columns={'index': 'date'})
                     
-            # Concatenate the data
             data = pd.concat([data, forecast_data], ignore_index=True)
         
         # Ensure 'date' column exists before sorting
         if 'date' in data.columns:
-            # Sort by date
             data = data.sort_values("date")
         else:
             logger.warning("'date' column not found in combined data. Cannot sort by date.")
-        
-        # Fill missing values
+
         data = self._fill_missing_values(data)
-        
-        # Create additional features
         data = self._create_features(data)
-        
-        # Select and rename columns to match the expected model input
         data = self._select_features(data)
         
         return data
@@ -162,16 +149,9 @@ class DataProcessor:
         if sequence_length is None:
             sequence_length = config.SEQUENCE_LENGTH
             
-        # Ensure data is sorted by date
         data = data.sort_values("date")
-        
-        # Select features (exclude date column)
         features = data.drop(columns=["date"])
-        
-        # Normalize the data
         normalized_data, scalers = self._normalize_data(features)
-        
-        # Create sequences
         X, y = [], []
         for i in range(len(normalized_data) - sequence_length):
             X.append(normalized_data[i:i+sequence_length])
@@ -216,6 +196,10 @@ class DataProcessor:
             Combined DataFrame
         """
         # If either dataset is empty, return the other
+
+        # print(noaa_data.head())
+        # print(ncei_data.head())
+
         if noaa_data.empty:
             return ncei_data
         if ncei_data.empty:
@@ -270,18 +254,24 @@ class DataProcessor:
         filled_data = data.copy()
         
         # Forward fill and backward fill for missing values
+        # for col in filled_data.columns:
+        #     if col != "date":
+        #         # First try forward fill
+        #         filled_data[col] = filled_data[col].fillna(method="ffill")
+        #         # Then try backward fill for any remaining NaNs
+        #         filled_data[col] = filled_data[col].fillna(method="bfill")
+                
+        #         # If still have NaNs, fill with column mean
+        #         if filled_data[col].isna().any():
+        #             col_mean = filled_data[col].mean()
+        #             filled_data[col] = filled_data[col].fillna(col_mean)
+
         for col in filled_data.columns:
             if col != "date":
-                # First try forward fill
-                filled_data[col] = filled_data[col].fillna(method="ffill")
-                # Then try backward fill for any remaining NaNs
-                filled_data[col] = filled_data[col].fillna(method="bfill")
-                
-                # If still have NaNs, fill with column mean
-                if filled_data[col].isna().any():
-                    col_mean = filled_data[col].mean()
-                    filled_data[col] = filled_data[col].fillna(col_mean)
-        
+                if filled_data[col].isna().all():
+                    logger.warning(f"All values missing for column: {col}. Leaving as NaN.")
+                    continue
+                filled_data[col] = filled_data[col].ffill().bfill()
         return filled_data
     
     def _create_features(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -294,29 +284,23 @@ class DataProcessor:
         Returns:
             DataFrame with additional features
         """
-        # Make a copy to avoid modifying the original
         featured_data = data.copy()
-        
-        # Check if date column exists
+    
         if 'date' in featured_data.columns:
-            # Extract date components
             featured_data["year"] = featured_data["date"].dt.year
             featured_data["month"] = featured_data["date"].dt.month
             featured_data["day"] = featured_data["date"].dt.day
             featured_data["dayofyear"] = featured_data["date"].dt.dayofyear
             
-            # Create season feature (1=Winter, 2=Spring, 3=Summer, 4=Fall)
             featured_data["season"] = featured_data["month"].apply(
                 lambda x: 1 if x in [12, 1, 2] else 2 if x in [3, 4, 5] else 3 if x in [6, 7, 8] else 4
             )
         else:
             logger.warning("'date' column not found. Cannot create date-based features.")
-        
-        # Create temperature range feature
+
         if "temperature_max" in featured_data.columns and "temperature_min" in featured_data.columns:
             featured_data["temperature_range"] = featured_data["temperature_max"] - featured_data["temperature_min"]
         
-        # Create lagged features for precipitation
         if "precipitation" in featured_data.columns:
             featured_data["precipitation_lag1"] = featured_data["precipitation"].shift(1)
             featured_data["precipitation_lag2"] = featured_data["precipitation"].shift(2)
@@ -327,7 +311,7 @@ class DataProcessor:
             featured_data["precipitation_rolling_mean_7d"] = featured_data["precipitation"].rolling(window=7).mean()
             featured_data["precipitation_rolling_max_7d"] = featured_data["precipitation"].rolling(window=7).max()
         
-        # Fill NaN values created by lagging and rolling operations
+        # Fill NaN values!
         featured_data = self._fill_missing_values(featured_data)
         
         return featured_data
@@ -342,10 +326,8 @@ class DataProcessor:
         Returns:
             DataFrame with selected features
         """
-        # Define the features to keep
         features_to_keep = ["date", "precipitation"]
         
-        # Add other features if they exist in the data
         possible_features = [
             "temperature_max", "temperature_min", "temperature_avg", 
             "humidity", "wind_speed", "pressure", "dew_point",
@@ -357,7 +339,6 @@ class DataProcessor:
             if feature in data.columns:
                 features_to_keep.append(feature)
         
-        # Select the features
         selected_data = data[features_to_keep]
         
         return selected_data
@@ -374,7 +355,6 @@ class DataProcessor:
         """
         from sklearn.preprocessing import MinMaxScaler
         
-        # Create a scaler for each column
         scalers = {}
         normalized_data = np.zeros(data.shape)
         
@@ -387,21 +367,10 @@ class DataProcessor:
 
 
 if __name__ == "__main__":
-    # Example usage
     processor = DataProcessor()
-    
-    # Collect historical data
     historical_data = processor.collect_historical_data("2020-01-01", "2022-12-31")
-    
-    # Collect forecast data
     forecast_data = processor.collect_forecast_data(days=7)
-    
-    # Prepare data for model
     prepared_data = processor.prepare_data_for_model(historical_data, forecast_data)
-    
-    # Save to CSV
     processor.save_data(prepared_data, "data/nyc_weather_data.csv")
-    
-    # Create sequences for LSTM model
     X, y, scalers = processor.create_sequences(prepared_data, sequence_length=30)
     print(f"X shape: {X.shape}, y shape: {y.shape}")
