@@ -35,17 +35,10 @@ class DataProcessor:
         os.makedirs(config.DATA_DIR, exist_ok=True)
     
     def collect_historical_data(self, 
-                              start_date: str = None, 
-                              end_date: str = None) -> pd.DataFrame:
+                                start_date: str = None, 
+                                end_date: str = None) -> pd.DataFrame:
         """
-        Collect historical weather data from NOAA and NCEI.
-        
-        Args:
-            start_date: Start date in YYYY-MM-DD format
-            end_date: End date in YYYY-MM-DD format
-            
-        Returns:
-            DataFrame with combined historical weather data
+        Collect historical weather data from NOAA only.
         """
         if start_date is None:
             start_date = config.HISTORICAL_START_DATE
@@ -54,20 +47,27 @@ class DataProcessor:
             
         logger.info(f"Collecting historical data from {start_date} to {end_date}")
         
-        # Get NOAA daily data
+        # Fetch NOAA daily data only  // CHANGE: Remove fetching of NCEI data.
         logger.info("Fetching NOAA daily data...")
         noaa_data = self.noaa_client.get_daily_data(start_date, end_date)
         
-        # Get NCEI hourly data aggregated to daily
-        logger.info("Fetching NCEI hourly data...")
-        ncei_start = datetime.strptime(end_date, "%Y-%m-%d") - timedelta(days=365)
-        ncei_start_str = ncei_start.strftime("%Y-%m-%d")
-        ncei_data = self.ncei_client.get_daily_aggregated_data(ncei_start_str, end_date)
+        # Debug: Save NOAA data for inspection.
+        debug_path = os.path.join(config.DATA_DIR, "_debug_noaa.csv")
+        noaa_data.to_csv(debug_path, index=False)
+        logger.info(f"Saved NOAA debug data to: {debug_path}")
         
-        # Combine the data
-        combined_data = self._combine_historical_data(noaa_data, ncei_data)
+        # Rename NOAA columns to match our model naming conventions.
+        noaa_renamed = noaa_data.rename(columns={
+            "PRCP": "precipitation",
+            "TMAX": "temperature_max",
+            "TMIN": "temperature_min",
+            "TAVG": "temperature_avg",
+            "AWND": "wind_speed",
+        })
         
-        return combined_data
+        # Return the NOAA data only.  // CHANGE: Do not combine with NCEI.
+        return noaa_renamed.sort_values("date")
+
     
     def collect_forecast_data(self, days: int = None) -> pd.DataFrame:
         """
@@ -183,29 +183,32 @@ class DataProcessor:
         return filename
     
     def _combine_historical_data(self, 
-                               noaa_data: pd.DataFrame, 
-                               ncei_data: pd.DataFrame) -> pd.DataFrame:
+                                noaa_data: pd.DataFrame, 
+                                ncei_data: pd.DataFrame) -> pd.DataFrame:
         """
-        Combine historical data from NOAA and NCEI.
-        
-        Args:
-            noaa_data: NOAA daily data
-            ncei_data: NCEI daily data
-            
-        Returns:
-            Combined DataFrame
+        Combine historical data from NOAA and NCEI, avoiding duplication from fallback logic.
         """
-        # If either dataset is empty, return the other
+        # If both are empty, return empty
+        if noaa_data.empty and ncei_data.empty:
+            logger.warning("Both NOAA and NCEI data are empty.")
+            return pd.DataFrame()
 
-        # print(noaa_data.head())
-        # print(ncei_data.head())
+        # Check if NOAA data is mostly missing or single row duplicated
+        if noaa_data.empty or noaa_data.drop(columns=["date"], errors="ignore").nunique().sum() <= 2:
+            logger.warning("NOAA data looks mostly constant or empty. Skipping it.")
+            noaa_data = pd.DataFrame()
+
+        # Same check for NCEI
+        if ncei_data.empty or ncei_data.drop(columns=["date"], errors="ignore").nunique().sum() <= 2:
+            logger.warning("NCEI data looks mostly constant or empty. Skipping it.")
+            ncei_data = pd.DataFrame()
 
         if noaa_data.empty:
             return ncei_data
         if ncei_data.empty:
             return noaa_data
-        
-        # Rename NOAA columns for consistency
+
+        # Rename NOAA columns
         noaa_renamed = noaa_data.rename(columns={
             "PRCP": "precipitation",
             "TMAX": "temperature_max",
@@ -213,32 +216,24 @@ class DataProcessor:
             "TAVG": "temperature_avg",
             "AWND": "wind_speed",
         })
-        
-        # Merge the datasets on date
+
+        # Merge on date
         merged = pd.merge(noaa_renamed, ncei_data, on="date", how="outer", suffixes=("_noaa", "_ncei"))
-        
-        # Prioritize NOAA data but fill missing values from NCEI
         combined = pd.DataFrame()
         combined["date"] = merged["date"]
-        
-        # Precipitation
+
+        # Combine with preference for NOAA
         combined["precipitation"] = merged["precipitation_noaa"].fillna(merged["precipitation"])
-        
-        # Temperature
-        combined["temperature_max"] = merged["temperature_max_noaa"].fillna(merged["temperature_avg"] + 5)  # Estimate max temp
-        combined["temperature_min"] = merged["temperature_min_noaa"].fillna(merged["temperature_avg"] - 5)  # Estimate min temp
+        combined["temperature_max"] = merged["temperature_max_noaa"].fillna(merged["temperature_avg"] + 5)
+        combined["temperature_min"] = merged["temperature_min_noaa"].fillna(merged["temperature_avg"] - 5)
         combined["temperature_avg"] = merged["temperature_avg_noaa"].fillna(merged["temperature_avg"])
-        
-        # Other features
         combined["humidity"] = merged["humidity"]
         combined["wind_speed"] = merged["wind_speed_noaa"].fillna(merged["wind_speed"])
         combined["pressure"] = merged["pressure"]
         combined["dew_point"] = merged["dew_point"]
-        
-        # Sort by date
-        combined = combined.sort_values("date")
-        
-        return combined
+
+        return combined.sort_values("date")
+
     
     def _fill_missing_values(self, data: pd.DataFrame) -> pd.DataFrame:
         """
