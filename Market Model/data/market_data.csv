@@ -1,101 +1,101 @@
-ticker,event_ticker,market_type,title,subtitle,yes_sub_title,no_sub_title,open_time,close_time,expected_expiration_time,expiration_time,latest_expiration_time,settlement_timer_seconds,status,response_price_units,notional_value,tick_size,yes_bid,yes_ask,no_bid,no_ask,last_price,previous_yes_bid,previous_yes_ask,previous_price,volume,volume_24h,liquidity,open_interest,result,can_close_early,expiration_value,category,risk_limit_cents,strike_type,custom_strike,rules_primary,rules_secondary,floor_strike,cap_strike
-KXFEDMENTION-25MAY-YC,KXFEDMENTION-25MAY,binary,Will Powell say Yield curve at his May 2025 press conference?,,Yield curve,Yield curve,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Yield curve'},,,,
-KXFEDMENTION-25MAY-RSTAR,KXFEDMENTION-25MAY,binary,Will Powell say R* / R-star / R star at his May 2025 press conference?,,R* / R-star / R star,R* / R-star / R star,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'R* / R-star / R star'},,,,
-KXFEDMENTION-25MAY-REALWAGE,KXFEDMENTION-25MAY,binary,Will Powell say Real wage at his May 2025 press conference?,,Real wage,Real wage,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Real wage'},,,,
-KXFEDMENTION-25MAY-MEDIAN,KXFEDMENTION-25MAY,binary,Will Powell say Median at his May 2025 press conference?,,Median,Median,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Median'},,,,
-KXFEDMENTION-25MAY-GAS,KXFEDMENTION-25MAY,binary,Will Powell say Gas / Gasoline / Natural Gas at his May 2025 press conference?,,Gas / Gasoline / Natural Gas,Gas / Gasoline / Natural Gas,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Gas / Gasoline / Natural Gas'},,,,
-KXFEDMENTION-25MAY-FUEL,KXFEDMENTION-25MAY,binary,Will Powell say Fuel at his May 2025 press conference?,,Fuel,Fuel,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Fuel'},,,,
-KXFEDMENTION-25MAY-EXPECTATION,KXFEDMENTION-25MAY,binary,Will Powell say Expectation at his May 2025 press conference?,,Expectation,Expectation,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Expectation'},,,,
-KXFEDMENTION-25MAY-EU,KXFEDMENTION-25MAY,binary,Will Powell say EU / European Union at his May 2025 press conference?,,EU / European Union,EU / European Union,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'EU / European Union'},,,,
-KXFEDMENTION-25MAY-ENERGY,KXFEDMENTION-25MAY,binary,Will Powell say Energy at his May 2025 press conference?,,Energy,Energy,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Energy'},,,,
-KXFEDMENTION-25MAY-DEFAULT,KXFEDMENTION-25MAY,binary,Will Powell say Default at his May 2025 press conference?,,Default,Default,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Default'},,,,
-KXFEDMENTION-25MAY-TRUMP,KXFEDMENTION-25MAY,binary,Will Powell say Trump at his May 2025 press conference?,,Trump,Trump,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Trump'},,,,
-KXFEDMENTION-25MAY-TRADEWAR,KXFEDMENTION-25MAY,binary,Will Powell say Trade war at his May 2025 press conference?,,Trade war,Trade war,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Trade war'},,,,
-KXFEDMENTION-25MAY-SOFTLANDING,KXFEDMENTION-25MAY,binary,Will Powell say Soft landing at his May 2025 press conference?,,Soft landing,Soft landing,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Soft landing'},,,,
-KXFEDMENTION-25MAY-RECESSION,KXFEDMENTION-25MAY,binary,Will Powell say Recession at his May 2025 press conference?,,Recession,Recession,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Recession'},,,,
-KXFEDMENTION-25MAY-QT,KXFEDMENTION-25MAY,binary,Will Powell say QT / Quantitative Tightening at his May 2025 press conference?,,QT / Quantitative Tightening,QT / Quantitative Tightening,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'QT / Quantitative Tightening'},,,,
-KXFEDMENTION-25MAY-FORTKNOX,KXFEDMENTION-25MAY,binary,Will Powell say Fort Knox at his May 2025 press conference?,,Fort Knox,Fort Knox,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Fort Knox'},,,,
-KXFEDMENTION-25MAY-EGG,KXFEDMENTION-25MAY,binary,Will Powell say Egg at his May 2025 press conference?,,Egg,Egg,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Egg'},,,,
-KXFEDMENTION-25MAY-DOTPLOT,KXFEDMENTION-25MAY,binary,Will Powell say Dot plot at his May 2025 press conference?,,Dot plot,Dot plot,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Dot plot'},,,,
-KXFEDMENTION-25MAY-CRYPTO,KXFEDMENTION-25MAY,binary,Will Powell say Crypto / Cryptocurrency at his May 2025 press conference?,,Crypto / Cryptocurrency,Crypto / Cryptocurrency,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Crypto / Cryptocurrency'},,,,
-KXFEDMENTION-25MAY-CREDIT,KXFEDMENTION-25MAY,binary,Will Powell say Credit at his May 2025 press conference?,,Credit,Credit,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Credit'},,,,
-KXFEDMENTION-25MAY-CHINA,KXFEDMENTION-25MAY,binary,Will Powell say China at his May 2025 press conference?,,China,China,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'China'},,,,
-KXFEDMENTION-25MAY-CC,KXFEDMENTION-25MAY,binary,Will Powell say Consumer confidence at his May 2025 press conference?,,Consumer confidence,Consumer confidence,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Consumer confidence'},,,,
-KXFEDMENTION-25MAY-BOR,KXFEDMENTION-25MAY,binary,Will Powell say Balance of risk at his May 2025 press conference?,,Balance of risk,Balance of risk,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Balance of risk'},,,,
-KXFEDMENTION-25MAY-BITCOIN,KXFEDMENTION-25MAY,binary,Will Powell say Bitcoin at his May 2025 press conference?,,Bitcoin,Bitcoin,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Bitcoin'},,,,
-KXFEDMENTION-25MAY-BALANCESHEET,KXFEDMENTION-25MAY,binary,Will Powell say Balance sheet at his May 2025 press conference?,,Balance sheet,Balance sheet,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Balance sheet'},,,,
-KXFEDMENTION-25MAY-TARIFF,KXFEDMENTION-25MAY,binary,Will Powell say Tariff at his May 2025 press conference?,,Tariff,Tariff,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Tariff'},,,,
-KXFEDMENTION-25MAY-RESTRICTIVE,KXFEDMENTION-25MAY,binary,Will Powell say Restrictive at his May 2025 press conference?,,Restrictive,Restrictive,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Restrictive'},,,,
-KXFEDMENTION-25MAY-PROJECTION,KXFEDMENTION-25MAY,binary,Will Powell say Projection at his May 2025 press conference?,,Projection,Projection,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Projection'},,,,
-KXFEDMENTION-25MAY-MICHIGAN,KXFEDMENTION-25MAY,binary,Will Powell say Michigan at his May 2025 press conference?,,Michigan,Michigan,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Michigan'},,,,
-KXFEDMENTION-25MAY-GOODAFTERNOON,KXFEDMENTION-25MAY,binary,Will Powell say Good Afternoon at his May 2025 press conference?,,Good Afternoon,Good Afternoon,2025-03-26T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,2025-05-08T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Good Afternoon'},,,,
-KXSECPRESSMENTION-25MAY31-YEMEN,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Yemen at her next press briefing?,,Yemen,Yemen,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Yemen'},,,,
-KXSECPRESSMENTION-25MAY31-WALTZ,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Waltz at her next press briefing?,,Waltz,Waltz,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Waltz'},,,,
-KXSECPRESSMENTION-25MAY31-TESLA,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Tesla at her next press briefing?,,Tesla,Tesla,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Tesla'},,,,
-KXSECPRESSMENTION-25MAY31-KHALIL,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Khalil at her next press briefing?,,Khalil,Khalil,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Khalil'},,,,
-KXSECPRESSMENTION-25MAY31-GOLDBERG,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Goldberg at her next press briefing?,,Goldberg,Goldberg,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Goldberg'},,,,
-KXSECPRESSMENTION-25MAY31-GABBARD,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Gabbard at her next press briefing?,,Gabbard,Gabbard,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Gabbard'},,,,
-KXSECPRESSMENTION-25MAY31-EMUS,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Elon / Musk at her next press briefing?,,Elon / Musk,Elon / Musk,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Elon / Musk'},,,,
-KXSECPRESSMENTION-25MAY31-COLUMBIA,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Columbia / Colombia at her next press briefing?,,Columbia / Colombia,Columbia / Colombia,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Columbia / Colombia'},,,,
-KXSECPRESSMENTION-25MAY31-CLASSIFIED,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Classified at her next press briefing?,,Classified,Classified,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Classified'},,,,
-KXSECPRESSMENTION-25MAY31-ATLANTIC,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Atlantic at her next press briefing?,,Atlantic,Atlantic,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Atlantic'},,,,
-KXSECPRESSMENTION-25MAY31-SIGNAL,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Signal at her next press briefing?,,Signal,Signal,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Signal'},,,,
-KXSECPRESSMENTION-25MAY31-HOUTHI,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Houthi at her next press briefing?,,Houthi,Houthi,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Houthi'},,,,
-KXSECPRESSMENTION-25MAY31-HEGSETH,KXSECPRESSMENTION-25MAY31,binary,Will the White House Press Secretary say Hegseth at her next press briefing?,,Hegseth,Hegseth,2025-03-26T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,2025-05-31T14:00:00Z,1800,initialized,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Word': 'Hegseth'},,,,
-KXSPOTIFYARTISTD-25MAR26-ZAC,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Zach Bryan,Zach Bryan,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Zach Bryan'},,,,
-KXSPOTIFYARTISTD-25MAR26-TYL,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,"Tyler, The Creator","Tyler, The Creator",2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,"{'Song/Artist/Album': 'Tyler, The Creator'}",,,,
-KXSPOTIFYARTISTD-25MAR26-TRA,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Travis Scott,Travis Scott,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Travis Scott'},,,,
-KXSPOTIFYARTISTD-25MAR26-THE,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,The Weeknd,The Weeknd,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'The Weeknd'},,,,
-KXSPOTIFYARTISTD-25MAR26-TAY,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Taylor Swift,Taylor Swift,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Taylor Swift'},,,,
-KXSPOTIFYARTISTD-25MAR26-SZA,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,SZA,SZA,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'SZA'},,,,
-KXSPOTIFYARTISTD-25MAR26-PLA,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Playboi Carti,Playboi Carti,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Playboi Carti'},,,,
-KXSPOTIFYARTISTD-25MAR26-PAR,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,PARTYNEXTDOOR,PARTYNEXTDOOR,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'PARTYNEXTDOOR'},,,,
-KXSPOTIFYARTISTD-25MAR26-MOR,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Morgan Wallen,Morgan Wallen,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Morgan Wallen'},,,,
-KXSPOTIFYARTISTD-25MAR26-KEN,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Kendrick Lamar,Kendrick Lamar,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Kendrick Lamar'},,,,
-KXSPOTIFYARTISTD-25MAR26-KAN,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Kanye West,Kanye West,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Kanye West'},,,,
-KXSPOTIFYARTISTD-25MAR26-FUT,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Future,Future,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Future'},,,,
-KXSPOTIFYARTISTD-25MAR26-BIL,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Billie Eilish,Billie Eilish,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Billie Eilish'},,,,
-KXSPOTIFYARTISTD-25MAR26-BAD,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Bad Bunny,Bad Bunny,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Bad Bunny'},,,,
-KXSPOTIFYARTISTD-25MAR26-DRA,KXSPOTIFYARTISTD-25MAR26,binary,"Top USA Artist on Spotify on Mar 26, 2025?",::,Drake,Drake,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Drake'},,,,
-KXSPOTIFYD-25MAR26-TVO,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Kendrick Lamar,tv off (feat. lefty gunplay),tv off (feat. lefty gunplay),2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'tv off (feat. lefty gunplay)'},,,,
-KXSPOTIFYD-25MAR26-TIM,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: The Weeknd,Timeless (feat Playboi Carti),Timeless (feat Playboi Carti),2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Timeless (feat Playboi Carti)'},,,,
-KXSPOTIFYD-25MAR26-SPO,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Tate McRae,Sports car,Sports car,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Sports car'},,,,
-KXSPOTIFYD-25MAR26-RAT,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Playboi Carti,RATHER LIE (with The Weeknd),RATHER LIE (with The Weeknd),2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'RATHER LIE (with The Weeknd)'},,,,
-KXSPOTIFYD-25MAR26-PIN,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Chappell Roan,Pink Pony Club,Pink Pony Club,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Pink Pony Club'},,,,
-KXSPOTIFYD-25MAR26-ORD,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Alex Warren,Ordinary,Ordinary,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Ordinary'},,,,
-KXSPOTIFYD-25MAR26-NOT,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Kendrick Lamar,Not Like Us,Not Like Us,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Not Like Us'},,,,
-KXSPOTIFYD-25MAR26-JUS,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Morgan Wallen,Just In Case,Just In Case,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Just In Case'},,,,
-KXSPOTIFYD-25MAR26-EVI,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Playboi Carti,EVIL J0RDAN,EVIL J0RDAN,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'EVIL J0RDAN'},,,,
-KXSPOTIFYD-25MAR26-DIE,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Lady Gaga,Die With A Smile,Die With A Smile,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Die With A Smile'},,,,
-KXSPOTIFYD-25MAR26-BIR,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Billie Eilish,BIRDS OF A FEATHER,BIRDS OF A FEATHER,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'BIRDS OF A FEATHER'},,,,
-KXSPOTIFYD-25MAR26-ANX,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Doechii,Anxiety,Anxiety,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Anxiety'},,,,
-KXSPOTIFYD-25MAR26-NOK,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Drake,NOKIA,NOKIA,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'NOKIA'},,,,
-KXSPOTIFYD-25MAR26-LUT,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Kendrick Lamar,luther (with sza),luther (with sza),2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'luther (with sza)'},,,,
-KXSPOTIFYD-25MAR26-DAR,KXSPOTIFYD-25MAR26,binary,"Top USA Song on Spotify on Mar 26, 2025?",:: Lil Tecca,Dark Thoughts,Dark Thoughts,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Dark Thoughts'},,,,
-KXSPOTIFYGLOBALD-25MAR26-WIL,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Billie Eilish,WILDFLOWER,WILDFLOWER,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'WILDFLOWER'},,,,
-KXSPOTIFYGLOBALD-25MAR26-SAI,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Gigi Perez,Sailor Song,Sailor Song,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Sailor Song'},,,,
-KXSPOTIFYGLOBALD-25MAR26-NOT,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Kendrick Lamar,Not Like Us,Not Like Us,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Not Like Us'},,,,
-KXSPOTIFYGLOBALD-25MAR26-BEA,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Benson Boone,Beautiful Things,Beautiful Things,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Beautiful Things'},,,,
-KXSPOTIFYGLOBALD-25MAR26-WHO,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Jimin,Who,Who,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Who'},,,,
-KXSPOTIFYGLOBALD-25MAR26-THA,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Gracie Abrams,That’s So True,That’s So True,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'That’s So True'},,,,
-KXSPOTIFYGLOBALD-25MAR26-ORD,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Alex Warren,Ordinary,Ordinary,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Ordinary'},,,,
-KXSPOTIFYGLOBALD-25MAR26-LUT,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Kendrick Lamar,luther (with sza),luther (with sza),2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'luther (with sza)'},,,,
-KXSPOTIFYGLOBALD-25MAR26-LIK,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: JENNIE,like JENNIE,like JENNIE,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'like JENNIE'},,,,
-KXSPOTIFYGLOBALD-25MAR26-DTM,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Bad Bunny,DtMF,DtMF,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'DtMF'},,,,
-KXSPOTIFYGLOBALD-25MAR26-BIR,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Billie Eilish,BIRDS OF A FEATHER,BIRDS OF A FEATHER,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'BIRDS OF A FEATHER'},,,,
-KXSPOTIFYGLOBALD-25MAR26-BAI,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Bad Bunny,BAILE INoLVIDABLE,BAILE INoLVIDABLE,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'BAILE INoLVIDABLE'},,,,
-KXSPOTIFYGLOBALD-25MAR26-APT,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: ROSÉ,APT.,APT.,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'APT.'},,,,
-KXSPOTIFYGLOBALD-25MAR26-ANX,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Doechii,Anxiety,Anxiety,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Anxiety'},,,,
-KXSPOTIFYGLOBALD-25MAR26-DIE,KXSPOTIFYGLOBALD-25MAR26,binary,"Top Global Song on Spotify on Mar 26, 2025?",:: Lady Gaga,Die With A Smile,Die With A Smile,2025-03-25T16:30:00Z,2025-03-27T03:59:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,2025-04-09T14:00:00Z,300,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song/Artist/Album': 'Die With A Smile'},,,,
-KXDEPSECCOUNT-25MAY-3,KXDEPSECCOUNT-25MAY,binary,How many Deputy Secretaries of the Cabinet will be confirmed before May 2025?,,3,3,2025-03-25T13:17:23Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,between,,,,3.0,3.0
-KXDEPSECCOUNT-25MAY-2,KXDEPSECCOUNT-25MAY,binary,How many Deputy Secretaries of the Cabinet will be confirmed before May 2025?,,2,2,2025-03-25T13:17:23Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,between,,,,2.0,2.0
-KXDEPSECCOUNT-25MAY-1,KXDEPSECCOUNT-25MAY,binary,How many Deputy Secretaries of the Cabinet will be confirmed before May 2025?,,1,1,2025-03-25T13:17:23Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,2025-05-01T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,between,,,,1.0,1.0
-KXTOPSONG-25APR12-HAM,KXTOPSONG-25APR12,binary,Will Hampstead be the #1 song on the Billboard Hot 100 charts this week?,Hampstead:: Ariana Grande,Hampstead,Hampstead,2025-03-25T00:17:26Z,2025-04-07T03:59:00Z,2025-04-16T14:00:00Z,2025-04-26T14:00:00Z,2025-04-26T14:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song': 'Hampstead'},,,,
-KXTOPSONG-25APR12-NOK,KXTOPSONG-25APR12,binary,Will NOKIA be the #1 song on the Billboard Hot 100 charts this week?,NOKIA:: Drake,NOKIA,NOKIA,2025-03-25T00:17:26Z,2025-04-07T03:59:00Z,2025-04-16T14:00:00Z,2025-04-26T14:00:00Z,2025-04-26T14:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song': 'NOKIA'},,,,
-KXGLOBAL200-25APR05-LUT,KXGLOBAL200-25APR05,binary,Will luther be the #1 song on the Billboard Global 200 chart this week?,:: Kendrick Lamar,luther,luther,2025-03-25T00:00:00Z,2025-03-31T03:59:00Z,2025-04-09T14:00:00Z,2025-04-19T14:00:00Z,2025-04-19T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song': 'luther'},,,,
-KXGLOBAL200-25APR05-APT,KXGLOBAL200-25APR05,binary,Will APT. be the #1 song on the Billboard Global 200 chart this week?,:: ROSE & Bruno Mars,APT.,APT.,2025-03-25T00:00:00Z,2025-03-31T03:59:00Z,2025-04-09T14:00:00Z,2025-04-19T14:00:00Z,2025-04-19T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song': 'APT.'},,,,
-KXGLOBAL200-25APR05-DWAS,KXGLOBAL200-25APR05,binary,Will Die With A Smile be the #1 song on the Billboard Global 200 chart this week?,:: Lady Gaga & Bruno Mars,Die With A Smile,Die With A Smile,2025-03-25T00:00:00Z,2025-03-31T03:59:00Z,2025-04-09T14:00:00Z,2025-04-19T14:00:00Z,2025-04-19T14:00:00Z,1800,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,custom,{'Song': 'Die With A Smile'},,,,
-GTA6-26JAN31,GTA6,binary,"WIll GTA6 be released by Jan 31, 2026?","By Jan 31, 2026",Before February 2026,Before February 2026,2025-03-24T21:17:19Z,2026-02-01T04:59:00Z,2026-01-01T15:00:00Z,2026-02-01T15:00:00Z,2026-02-01T15:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,,,,,,
-GTA6-25SEP30,GTA6,binary,"WIll GTA6 be released by Sep 30, 2025?","By Sep 30, 2025",Before October 2025,Before October 2025,2025-03-24T21:17:19Z,2025-10-01T03:59:00Z,2026-01-01T15:00:00Z,2025-10-01T14:00:00Z,2025-10-01T14:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,,,,,,
-GTA6-25OCT31,GTA6,binary,"WIll GTA6 be released by Oct 31, 2025?","By Oct 31, 2025",Before November 2025,Before November 2025,2025-03-24T21:17:19Z,2025-11-01T03:59:00Z,2026-01-01T15:00:00Z,2025-11-01T14:00:00Z,2025-11-01T14:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,,,,,,
-GTA6-25NOV30,GTA6,binary,"WIll GTA6 be released by Nov 30, 2025?","By Nov 30, 2025",Before December 2025,Before December 2025,2025-03-24T21:17:19Z,2025-12-01T04:59:00Z,2026-01-01T15:00:00Z,2025-12-01T15:00:00Z,2025-12-01T15:00:00Z,3600,active,usd_cent,100,1,0,0,100,100,0,0,0,0,0,0,0,0,,True,,,0,,,,,,
+date,market_price,open_interest,trading_volume
+2024-12-30,0.42,2041,192
+2024-12-31,0.427,1517,338
+2025-01-01,0.434,1605,368
+2025-01-02,0.44,2280,117
+2025-01-03,0.445,1802,113
+2025-01-04,0.448,2159,320
+2025-01-05,0.45,1543,367
+2025-01-06,0.45,1844,277
+2025-01-07,0.447,1916,358
+2025-01-08,0.443,2320,397
+2025-01-09,0.438,2281,105
+2025-01-10,0.431,1551,125
+2025-01-11,0.424,2074,198
+2025-01-12,0.417,1567,156
+2025-01-13,0.409,2298,383
+2025-01-14,0.403,1857,131
+2025-01-15,0.397,2323,253
+2025-01-16,0.393,2389,165
+2025-01-17,0.391,2269,325
+2025-01-18,0.39,2258,117
+2025-01-19,0.391,2004,277
+2025-01-20,0.394,2434,266
+2025-01-21,0.399,1686,102
+2025-01-22,0.405,2491,155
+2025-01-23,0.412,1776,158
+2025-01-24,0.419,1808,289
+2025-01-25,0.426,2303,315
+2025-01-26,0.434,1821,393
+2025-01-27,0.44,2044,272
+2025-01-28,0.445,1699,214
+2025-01-29,0.448,2418,130
+2025-01-30,0.45,2378,267
+2025-01-31,0.45,1868,123
+2025-02-01,0.448,2166,239
+2025-02-02,0.444,2050,373
+2025-02-03,0.439,2417,255
+2025-02-04,0.432,2189,266
+2025-02-05,0.425,2036,258
+2025-02-06,0.418,2196,105
+2025-02-07,0.41,2404,350
+2025-02-08,0.404,1525,322
+2025-02-09,0.398,1796,362
+2025-02-10,0.394,2003,205
+2025-02-11,0.391,2484,314
+2025-02-12,0.39,1987,150
+2025-02-13,0.391,2207,172
+2025-02-14,0.394,1874,222
+2025-02-15,0.398,1755,179
+2025-02-16,0.404,2061,149
+2025-02-17,0.411,1924,169
+2025-02-18,0.418,2213,172
+2025-02-19,0.425,2359,133
+2025-02-20,0.433,2251,373
+2025-02-21,0.439,1947,167
+2025-02-22,0.444,1884,315
+2025-02-23,0.448,1638,247
+2025-02-24,0.45,2450,245
+2025-02-25,0.45,2049,294
+2025-02-26,0.448,2444,349
+2025-02-27,0.445,2203,198
+2025-02-28,0.44,2077,182
+2025-03-01,0.433,1881,132
+2025-03-02,0.426,2261,214
+2025-03-03,0.419,1941,151
+2025-03-04,0.411,2432,353
+2025-03-05,0.405,1554,241
+2025-03-06,0.399,1676,101
+2025-03-07,0.394,1530,274
+2025-03-08,0.391,1937,115
+2025-03-09,0.39,1995,222
+2025-03-10,0.391,1659,115
+2025-03-11,0.393,1636,217
+2025-03-12,0.397,1507,231
+2025-03-13,0.403,1549,102
+2025-03-14,0.41,1880,351
+2025-03-15,0.417,1879,369
+2025-03-16,0.424,1812,276
+2025-03-17,0.432,2065,334
+2025-03-18,0.438,1566,193
+2025-03-19,0.444,1977,312
+2025-03-20,0.447,1880,156
+2025-03-21,0.45,1549,369
+2025-03-22,0.45,2038,219
+2025-03-23,0.448,2272,149
+2025-03-24,0.445,1657,387
+2025-03-25,0.44,1749,168
+2025-03-26,0.434,2448,366
+2025-03-27,0.427,1958,215
+2025-03-28,0.42,1893,342
+2025-03-29,0.412,2159,339
+2025-03-30,0.405,2393,215
+2025-03-31,0.399,2226,281
+2025-04-01,0.395,2233,207
+2025-04-02,0.391,1586,181
+2025-04-03,0.39,1650,195
+2025-04-04,0.391,1807,241
+2025-04-05,0.393,2073,368
+2025-04-06,0.397,1790,117
+2025-04-07,0.402,1901,200
+2025-04-08,0.409,1825,399
