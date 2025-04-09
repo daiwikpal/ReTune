@@ -250,7 +250,7 @@ class PrecipitationModel:
             plt.savefig(save_path)
             logger.info(f"Training history plot saved to {save_path}")
         
-        plt.show()
+       # plt.show()
     
     def plot_predictions(self, 
                        dates: pd.Series, 
@@ -286,7 +286,7 @@ class PrecipitationModel:
             plt.savefig(save_path)
             logger.info(f"Predictions plot saved to {save_path}")
         
-        plt.show()
+        # plt.show()
     
     def set_scalers(self, scalers: Dict) -> None:
         """
