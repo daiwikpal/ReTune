@@ -1,0 +1,67 @@
+2025-04-17 19:57:28,979 - __main__ - INFO - Logging configured. Log file: /Users/daiwikpal/VSCode/ReTune/Anomaly Model/logs/data_processing_20250417_195728.log
+2025-04-17 19:57:28,979 - __main__ - INFO - Starting weather data processing
+2025-04-17 19:57:28,979 - __main__ - INFO - Parameters: include_precipitation=True, use_synthetic_if_api_fails=True
+2025-04-17 19:57:28,979 - __main__ - INFO - Found 29 CSV files in Anomaly Model/Historical Data/*.csv
+2025-04-17 19:57:28,980 - __main__ - INFO - Processing file 1/29: StormEvents_details-ftp_v1.0_d1996_c20250401.csv
+2025-04-17 19:57:29,316 - __main__ - INFO -   Read 48534 rows from StormEvents_details-ftp_v1.0_d1996_c20250401.csv
+2025-04-17 19:57:29,360 - __main__ - INFO - Processing file 2/29: StormEvents_details-ftp_v1.0_d1997_c20250401.csv
+2025-04-17 19:57:29,690 - __main__ - INFO -   Read 41991 rows from StormEvents_details-ftp_v1.0_d1997_c20250401.csv
+2025-04-17 19:57:29,716 - __main__ - INFO - Processing file 3/29: StormEvents_details-ftp_v1.0_d1998_c20250401.csv
+2025-04-17 19:57:30,139 - __main__ - INFO -   Read 50973 rows from StormEvents_details-ftp_v1.0_d1998_c20250401.csv
+2025-04-17 19:57:30,171 - __main__ - INFO - Processing file 4/29: StormEvents_details-ftp_v1.0_d1999_c20250401.csv
+2025-04-17 19:57:30,584 - __main__ - INFO -   Read 46383 rows from StormEvents_details-ftp_v1.0_d1999_c20250401.csv
+2025-04-17 19:57:30,613 - __main__ - INFO - Processing file 5/29: StormEvents_details-ftp_v1.0_d2000_c20250401.csv
+2025-04-17 19:57:31,001 - __main__ - INFO -   Read 52007 rows from StormEvents_details-ftp_v1.0_d2000_c20250401.csv
+2025-04-17 19:57:31,033 - __main__ - INFO - Processing file 6/29: StormEvents_details-ftp_v1.0_d2001_c20250401.csv
+2025-04-17 19:57:31,382 - __main__ - INFO -   Read 48875 rows from StormEvents_details-ftp_v1.0_d2001_c20250401.csv
+2025-04-17 19:57:31,407 - __main__ - INFO - Processing file 7/29: StormEvents_details-ftp_v1.0_d2002_c20250401.csv
+2025-04-17 19:57:31,775 - __main__ - INFO -   Read 50936 rows from StormEvents_details-ftp_v1.0_d2002_c20250401.csv
+2025-04-17 19:57:31,807 - __main__ - INFO - Processing file 8/29: StormEvents_details-ftp_v1.0_d2003_c20250401.csv
+2025-04-17 19:57:32,176 - __main__ - INFO -   Read 52956 rows from StormEvents_details-ftp_v1.0_d2003_c20250401.csv
+2025-04-17 19:57:32,205 - __main__ - INFO - Processing file 9/29: StormEvents_details-ftp_v1.0_d2004_c20250401.csv
+2025-04-17 19:57:32,627 - __main__ - INFO -   Read 52409 rows from StormEvents_details-ftp_v1.0_d2004_c20250401.csv
+2025-04-17 19:57:32,659 - __main__ - INFO - Processing file 10/29: StormEvents_details-ftp_v1.0_d2005_c20250401.csv
+2025-04-17 19:57:33,073 - __main__ - INFO -   Read 53976 rows from StormEvents_details-ftp_v1.0_d2005_c20250401.csv
+2025-04-17 19:57:33,105 - __main__ - INFO - Processing file 11/29: StormEvents_details-ftp_v1.0_d2006_c20250401.csv
+2025-04-17 19:57:33,528 - __main__ - INFO -   Read 56400 rows from StormEvents_details-ftp_v1.0_d2006_c20250401.csv
+2025-04-17 19:57:33,563 - __main__ - INFO - Processing file 12/29: StormEvents_details-ftp_v1.0_d2007_c20250401.csv
+2025-04-17 19:57:34,210 - __main__ - INFO -   Read 59011 rows from StormEvents_details-ftp_v1.0_d2007_c20250401.csv
+2025-04-17 19:57:34,255 - __main__ - INFO - Processing file 13/29: StormEvents_details-ftp_v1.0_d2008_c20250401.csv
+2025-04-17 19:57:35,300 - __main__ - INFO -   Read 71190 rows from StormEvents_details-ftp_v1.0_d2008_c20250401.csv
+2025-04-17 19:57:35,346 - __main__ - INFO - Processing file 14/29: StormEvents_details-ftp_v1.0_d2009_c20250401.csv
+2025-04-17 19:57:35,965 - __main__ - INFO -   Read 57398 rows from StormEvents_details-ftp_v1.0_d2009_c20250401.csv
+2025-04-17 19:57:36,002 - __main__ - INFO - Processing file 15/29: StormEvents_details-ftp_v1.0_d2010_c20250401.csv
+2025-04-17 19:57:36,692 - __main__ - INFO -   Read 62807 rows from StormEvents_details-ftp_v1.0_d2010_c20250401.csv
+2025-04-17 19:57:36,733 - __main__ - INFO - Processing file 16/29: StormEvents_details-ftp_v1.0_d2011_c20250401.csv
+2025-04-17 19:57:37,633 - __main__ - INFO -   Read 79091 rows from StormEvents_details-ftp_v1.0_d2011_c20250401.csv
+2025-04-17 19:57:37,683 - __main__ - INFO - Processing file 17/29: StormEvents_details-ftp_v1.0_d2012_c20250401.csv
+2025-04-17 19:57:38,375 - __main__ - INFO -   Read 64503 rows from StormEvents_details-ftp_v1.0_d2012_c20250401.csv
+2025-04-17 19:57:38,415 - __main__ - INFO - Processing file 18/29: StormEvents_details-ftp_v1.0_d2013_c20250401.csv
+2025-04-17 19:57:39,193 - __main__ - INFO -   Read 59986 rows from StormEvents_details-ftp_v1.0_d2013_c20250401.csv
+2025-04-17 19:57:39,235 - __main__ - INFO - Processing file 19/29: StormEvents_details-ftp_v1.0_d2014_c20250401.csv
+2025-04-17 19:57:39,888 - __main__ - INFO -   Read 59475 rows from StormEvents_details-ftp_v1.0_d2014_c20250401.csv
+2025-04-17 19:57:39,932 - __main__ - INFO - Processing file 20/29: StormEvents_details-ftp_v1.0_d2015_c20250401.csv
+2025-04-17 19:57:40,577 - __main__ - INFO -   Read 57907 rows from StormEvents_details-ftp_v1.0_d2015_c20250401.csv
+2025-04-17 19:57:40,611 - __main__ - INFO - Processing file 21/29: StormEvents_details-ftp_v1.0_d2016_c20250401.csv
+2025-04-17 19:57:41,204 - __main__ - INFO -   Read 56005 rows from StormEvents_details-ftp_v1.0_d2016_c20250401.csv
+2025-04-17 19:57:41,236 - __main__ - INFO - Processing file 22/29: StormEvents_details-ftp_v1.0_d2017_c20250401.csv
+2025-04-17 19:57:41,805 - __main__ - INFO -   Read 57029 rows from StormEvents_details-ftp_v1.0_d2017_c20250401.csv
+2025-04-17 19:57:41,841 - __main__ - INFO - Processing file 23/29: StormEvents_details-ftp_v1.0_d2018_c20250401.csv
+2025-04-17 19:57:42,464 - __main__ - INFO -   Read 62697 rows from StormEvents_details-ftp_v1.0_d2018_c20250401.csv
+2025-04-17 19:57:42,502 - __main__ - INFO - Processing file 24/29: StormEvents_details-ftp_v1.0_d2019_c20250401.csv
+2025-04-17 19:57:43,293 - __main__ - INFO -   Read 67861 rows from StormEvents_details-ftp_v1.0_d2019_c20250401.csv
+2025-04-17 19:57:43,336 - __main__ - INFO - Processing file 25/29: StormEvents_details-ftp_v1.0_d2020_c20240620.csv
+2025-04-17 19:57:44,054 - __main__ - INFO -   Read 61279 rows from StormEvents_details-ftp_v1.0_d2020_c20240620.csv
+2025-04-17 19:57:44,096 - __main__ - INFO - Processing file 26/29: StormEvents_details-ftp_v1.0_d2021_c20250401.csv
+2025-04-17 19:57:44,768 - __main__ - INFO -   Read 61389 rows from StormEvents_details-ftp_v1.0_d2021_c20250401.csv
+2025-04-17 19:57:44,813 - __main__ - INFO - Processing file 27/29: StormEvents_details-ftp_v1.0_d2022_c20250401.csv
+2025-04-17 19:57:45,534 - __main__ - INFO -   Read 69886 rows from StormEvents_details-ftp_v1.0_d2022_c20250401.csv
+2025-04-17 19:57:45,574 - __main__ - INFO - Processing file 28/29: StormEvents_details-ftp_v1.0_d2023_c20250401.csv
+2025-04-17 19:57:46,402 - __main__ - INFO -   Read 75677 rows from StormEvents_details-ftp_v1.0_d2023_c20250401.csv
+2025-04-17 19:57:46,443 - __main__ - INFO - Processing file 29/29: StormEvents_details-ftp_v1.0_d2024_c20250401.csv
+2025-04-17 19:57:47,285 - __main__ - INFO -   Read 70196 rows from StormEvents_details-ftp_v1.0_d2024_c20250401.csv
+2025-04-17 19:57:47,328 - __main__ - INFO - Concatenating 29 DataFrames...
+2025-04-17 19:57:47,350 - __main__ - INFO - Adding missing anomaly type columns...
+2025-04-17 19:57:47,362 - __main__ - INFO - Filtered to dates >= 1996-01-01: 348 rows (removed 0 rows)
+2025-04-17 19:57:47,362 - __main__ - INFO - Initializing NCEI client for precipitation data
+2025-04-17 19:57:47,363 - __main__ - INFO - Fetching real precipitation data from NCEI API...

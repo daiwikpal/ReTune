@@ -153,7 +153,7 @@ class NOAAClient:
                 pivot_df[col] = pd.to_numeric(pivot_df[col], errors="coerce")
 
         if "PRCP" in pivot_df.columns:
-            pivot_df["PRCP"] = pivot_df["PRCP"] / 254.0
+            pivot_df["PRCP"] = pivot_df["PRCP"] / 10.0 / 25.4  # Convert from tenths of mm to inches
         if "TMAX" in pivot_df.columns:
             pivot_df["TMAX"] = (pivot_df["TMAX"] / 10.0) * 9/5 + 32
         if "TMIN" in pivot_df.columns:
