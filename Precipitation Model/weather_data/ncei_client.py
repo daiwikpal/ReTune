@@ -9,6 +9,7 @@ import os
 import logging
 from typing import Dict, List, Any, Optional
 import io
+from dotenv import load_dotenv
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,7 +27,12 @@ class NCEIClient:
         """
         Initialize the NCEI Global Hourly Data client.
         """
-        self.base_url = config.NCEI_BASE_URL
+        load_dotenv()
+        self.token = os.getenv("NOAA_API_TOKEN")
+        if not self.token:
+            logger.warning("NOAA_API_TOKEN not set. NCEI requests will fail if attempted.") # fix so it won't fail immediately
+        self.base_url = "https://www.ncei.noaa.gov/cdo-web/api/v2/data"
+
         self.dataset = config.NCEI_DATASET
         self.station = config.NCEI_STATION
     
@@ -70,8 +76,8 @@ class NCEIClient:
             
             # Construct request parameters
             params = {
-                "dataset": self.dataset,
-                "stations": station_id,
+                "datasetid": self.dataset,
+                "stationid": station_id,
                 "startDate": current_start_str,
                 "endDate": current_end_str,
                 "format": "csv",
@@ -207,7 +213,7 @@ class NCEIClient:
         # Process precipitation (in mm)
         if "AA1" in processed.columns:
             # AA1 format: period,depth,condition,quality
-            processed["PRECIP"] = processed["AA1"].str.split(",").str[1].replace("", "0").astype(float) / 10.0
+            processed["PRECIP"] = processed["AA1"].str.split(",").str[1].replace("", "0").astype(float)
             # Convert to inches for consistency
             processed["PRECIP"] = processed["PRECIP"] / 25.4
         else:
@@ -290,7 +296,7 @@ class NCEIClient:
             Response text (CSV data)
         """
         try:
-            response = requests.get(url, params=params)
+            response = requests.get(url, headers={"token": self.token}, params=params)
             response.raise_for_status()
             return response.text
             
@@ -306,11 +312,20 @@ class NCEIClient:
 if __name__ == "__main__":
     # Example usage
     client = NCEIClient()
-    
-    # Get hourly data for a short period
-    hourly_data = client.get_hourly_data("2022-01-01", "2022-01-03")
-    print(hourly_data.head())
-    
-    # Get daily aggregated data
-    daily_data = client.get_daily_aggregated_data("2022-01-01", "2022-01-10")
-    print(daily_data.head())
+
+    # Set test dates
+    start = "2022-01-01"
+    end = "2022-01-10"
+
+    # Fetch daily aggregated data
+    daily_data = client.get_daily_aggregated_data(start, end)
+
+    # Check if data is returned
+    if not daily_data.empty:
+        # Save to CSV
+        output_path = "ncei_daily_weather_data.csv"
+        daily_data.to_csv(output_path, index=False)
+        print(f"CSV saved to: {output_path}")
+        print(daily_data.head())
+    else:
+        print("No data was returned.")

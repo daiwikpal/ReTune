@@ -1,23 +1,60 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from typing import Optional
+import numpy as np
 import pandas as pd
-from model import PrecipitationModel, DataProcessor
+from model import PrecipitationModel, DataProcessor, train_precipitation_model
+import config
+from predict import predict_precip_for_month
+
 
 app = FastAPI()
 
-# Load processor and model at startup
-processor = DataProcessor()
-model = PrecipitationModel()
-model.load_model()  # Loads precipitation_model.h5
+processor: DataProcessor
+model: PrecipitationModel
+data: pd.DataFrame
+X, y, scalers = None, None, None
 
-# Load the same processed data used for training
-data = pd.read_csv("data/nyc_weather_data.csv")
-data["date"] = pd.to_datetime(data["date"])
+@app.on_event("startup")
+def load_resources():
+    global processor, model, data, X, y, scalers
+    processor = DataProcessor()
+    model = PrecipitationModel(sequence_length=12)
+    model.load_model()
 
-# Recreate sequences and scalers
-X, y, scalers = processor.create_sequences(data, sequence_length=30)
-model.set_scalers(scalers)
+    # api.py → load_resources()
+    raw = pd.read_csv(config.OUTPUT_FILE, parse_dates=["date"])
+    raw = raw.set_index("date")
+
+    # 1) aggregate to month:
+    monthly = raw.resample("M").agg({
+        "precipitation": "sum",
+        "temperature_max": "mean",
+        "temperature_min": "mean",
+        "humidity": "mean",
+        "wind_speed": "mean",
+        "pressure": "mean",
+    }).reset_index()
+
+    # 2) add month/season + lag features (exactly like training!)
+    monthly["month"]  = monthly["date"].dt.month
+    monthly["season"] = monthly["month"].map(lambda m:
+                        1 if m in [12,1,2] else
+                        2 if m in [3,4,5]  else
+                        3 if m in [6,7,8]  else
+                        4)
+    for lag in (1,2,3):
+        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
+    monthly = monthly.dropna().reset_index(drop=True)
+
+    # 3) build your sequences exactly as you did at training time:
+    X, y, scalers = processor.create_sequences(
+        monthly,
+        sequence_length=12,      # must be the same SEQUENCE_LENGTH you trained with
+        target_column="precipitation"
+    )
+    model.set_scalers(scalers)
+    data = raw
 
 @app.get("/")
 def redirect_to_docs():
@@ -25,46 +62,33 @@ def redirect_to_docs():
 
 @app.post("/train-model")
 def train_model():
+    global model, X, y, scalers, data
+
     model = train_precipitation_model()
-    return {"message": "Model trained and saved successfully."}
+    data = pd.read_csv(config.OUTPUT_FILE)
+    data["date"] = pd.to_datetime(data["date"])
+    X, y, scalers = processor.create_sequences(data, sequence_length=30)
+    model.set_scalers(scalers)
+
+    return {"message": "Model retrained and reloaded."}
 
 @app.get("/predict")
-def predict(date_range: Optional[str] = None, location: str = "NYC"):
-    if not date_range:
-        return {"error": "Please provide a date_range like '2024-12-01,2024-12-07'"}
-    
+def predict(month: Optional[str] = None):
+    if not month:
+        return {"error": "Please provide a month like '2025-06'"}
+
     try:
-        start_str, end_str = date_range.split(",")
-        start_date = pd.to_datetime(start_str)
-        end_date = pd.to_datetime(end_str)
-    except Exception as e:
-        return {"error": "Invalid date_range format. Use 'YYYY-MM-DD,YYYY-MM-DD'"}
-
-    # Slice the appropriate portion from the original data
-    mask = (data["date"] >= start_date) & (data["date"] <= end_date)
-    dates_to_predict = data.loc[mask]
-
-    if dates_to_predict.empty:
-        return {"error": "No data available for the given date range"}
-
-    # Get the last valid sequence that ends before this range starts
-    sequence_start_index = data.index[data["date"] == start_date].tolist()
-    if not sequence_start_index:
-        return {"error": "Start date not found in data"}
-    
-    seq_idx = sequence_start_index[0] - 30
-    if seq_idx < 0:
-        return {"error": "Not enough data before start date to form a sequence"}
-
-    X_input = X[seq_idx]
-
-    # Predict (note: we only predict the first day for simplicity)
-    y_pred = model.predict(X_input.reshape(1, *X_input.shape))
-    pred = scalers["precipitation"].inverse_transform(y_pred).flatten()[0]
+        rain = predict_precip_for_month(month)
+    except ValueError as e:
+        return {"error": str(e)}
+    except Exception:
+        return {"error": "Something went wrong while predicting"}
 
     return {
-        "start_date": start_str,
-        "end_date": end_str,
-        "predicted_precipitation_first_day": round(float(pred), 4)
+        "month": month,
+        "predicted_monthly_precipitation_inches": rain
     }
+
+
+
 

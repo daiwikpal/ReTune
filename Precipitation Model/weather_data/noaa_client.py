@@ -30,10 +30,6 @@ class NOAAClient:
         """
         self.base_url = config.NOAA_BASE_URL
         self.token = token or config.NOAA_TOKEN
-        
-        if not self.token:
-            logger.warning("NOAA API token not provided. Set NOAA_TOKEN in .env file.")
-        
         self.headers = {
             "token": self.token
         }
@@ -205,6 +201,10 @@ class NOAAClient:
         Returns:
             JSON response as dictionary
         """
+        if not self.token:
+            logger.warning("NOAA API token not provided. This request will fail if attempted.")
+            return {"results": []}
+
         try:
             response = requests.get(endpoint, headers=self.headers, params=params)
             

@@ -27,9 +27,9 @@ class DataProcessor:
         """
         Initialize the data processor.
         """
-        self.noaa_client = NOAAClient()
+        self.noaa_client = None
         self.openweather_client = OpenWeatherClient()
-        self.ncei_client = NCEIClient()
+        self.ncei_client = None
         
         # Create data directory if it doesn't exist
         os.makedirs(config.DATA_DIR, exist_ok=True)
@@ -40,6 +40,9 @@ class DataProcessor:
         """
         Collect historical weather data from NOAA only.
         """
+        if os.path.exists(config.OUTPUT_FILE):
+            logger.info(f"Found existing data file at {config.OUTPUT_FILE}, loading instead of refetching")
+            return pd.read_csv(config.OUTPUT_FILE)
         if start_date is None:
             start_date = config.HISTORICAL_START_DATE
         if end_date is None:
@@ -49,7 +52,10 @@ class DataProcessor:
         
         # Fetch NOAA daily data only  // CHANGE: Remove fetching of NCEI data.
         logger.info("Fetching NOAA daily data...")
+        if self.noaa_client is None:
+            self.noaa_client = NOAAClient()
         noaa_data = self.noaa_client.get_daily_data(start_date, end_date)
+
         
         # Debug: Save NOAA data for inspection.
         debug_path = os.path.join(config.DATA_DIR, "_debug_noaa.csv")
@@ -65,7 +71,6 @@ class DataProcessor:
             "AWND": "wind_speed",
         })
         
-        # Return the NOAA data only.  // CHANGE: Do not combine with NCEI.
         return noaa_renamed.sort_values("date")
 
     
