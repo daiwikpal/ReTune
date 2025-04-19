@@ -336,22 +336,47 @@ def train_precipitation_model(data_path: str = None, sequence_length: int = None
     
     data = pd.read_csv(data_path)
     data["date"] = pd.to_datetime(data["date"])
-    
-    # Create sequences
+    data = data.set_index("date")
+
+    monthly = data.resample("M").agg({
+        "precipitation": "sum",
+        "temperature_max": "mean",
+        "temperature_min": "mean",
+        # "temperature_avg": "mean",
+        "humidity": "mean",
+        "wind_speed": "mean",
+        "pressure": "mean",
+        # "dew_point": "mean"
+    }).reset_index()
+
+    monthly["month"] = monthly["date"].dt.month
+    monthly["season"] = monthly["month"].map(lambda m: 
+        1 if m in [12,1,2] else
+        2 if m in [3,4,5]  else
+        3 if m in [6,7,8]  else
+        4
+    )
+
+    for lag in (1,2,3):
+        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
+
+    monthly = monthly.dropna().reset_index(drop=True)
+
     processor = DataProcessor()
-    X, y, scalers = processor.create_sequences(data, sequence_length, "precipitation")
-    
-    # Split into train, validation, and test sets
+    X, y, scalers = processor.create_sequences(
+        monthly,
+        sequence_length=config.SEQUENCE_LENGTH,
+        target_column="precipitation"
+    )
+
     train_size = int(len(X) * config.TRAIN_SPLIT)
     X_train, X_test = X[:train_size], X[train_size:]
     y_train, y_test = y[:train_size], y[train_size:]
     
-    # Further split training data into train and validation
     val_size = int(len(X_train) * 0.2)
     X_train, X_val = X_train[:-val_size], X_train[-val_size:]
     y_train, y_val = y_train[:-val_size], y_train[-val_size:]
     
-    # Create and train the model
     model = PrecipitationModel(sequence_length)
     model.build_model((X_train.shape[1], X_train.shape[2]))
     
@@ -366,18 +391,11 @@ def train_precipitation_model(data_path: str = None, sequence_length: int = None
     
     # Set scalers and feature columns for later use
     model.set_scalers(scalers)
-    model.set_feature_columns(data.drop(columns=["date"]).columns.tolist())
-    
-    # Plot training history
+    model.set_feature_columns(monthly.drop(columns=["date"]).columns.tolist())
     model.plot_training_history(history, os.path.join(config.DATA_DIR, "training_history.png"))
-    
-    # Make predictions on test data
     y_pred = model.predict(X_test)
-    
-    # Get dates for test data
-    test_dates = data["date"].iloc[train_size + sequence_length:train_size + sequence_length + len(y_test)]
-    
-    # Denormalize predictions and actual values
+    # test_dates = data.index[train_size + sequence_length:train_size + sequence_length + len(y_test)]
+    test_dates = monthly["date"].iloc[sequence_length + train_size : sequence_length + train_size + len(y_test)]
     y_test_denorm = scalers["precipitation"].inverse_transform(y_test.reshape(-1, 1)).flatten()
     y_pred_denorm = scalers["precipitation"].inverse_transform(y_pred).flatten()
     

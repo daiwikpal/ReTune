@@ -37,7 +37,8 @@ NCEI_STATION = "72503"  # LaGuardia Airport, NY
 
 # Output settings
 DATA_DIR = "data"
-OUTPUT_FILE = os.path.join(DATA_DIR, "nyc_weather_data.csv")
+OUTPUT_FILE = "data/nyc_weather_data.csv"
+
 
 # Feature settings
 FEATURES = [
@@ -54,5 +55,5 @@ FEATURES = [
 ]
 
 # Model settings
-SEQUENCE_LENGTH = 30  # Number of days to use as input
+SEQUENCE_LENGTH = 12  # Number of months to use as input
 TRAIN_SPLIT = 0.8  # Percentage of data to use for training

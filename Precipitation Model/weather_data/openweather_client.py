@@ -61,9 +61,9 @@ class OpenWeatherClient:
         response = self._make_request(endpoint, params)
         return response
     
-    def get_forecast(self, lat: float = None, lon: float = None, days: int = 5) -> pd.DataFrame:
+    def get_forecast(self, days: int = None) -> pd.DataFrame:
         """
-        Get weather forecast for a location.
+        Get weather forecast for a location for the next N days.
         
         Args:
             lat: Latitude of the location
@@ -73,15 +73,13 @@ class OpenWeatherClient:
         Returns:
             DataFrame with forecast data
         """
-        if lat is None:
-            lat = config.NYC_LAT
-        if lon is None:
-            lon = config.NYC_LON
+        if days is None:
+            days = config.FORECAST_DAYS
             
         endpoint = f"{self.base_url}/forecast"
         params = {
-            "lat": lat,
-            "lon": lon,
+            "lat": config.NYC_LAT,
+            "lon": config.NYC_LON,
             "appid": self.api_key,
             "units": "imperial"
         }
@@ -153,7 +151,7 @@ class OpenWeatherClient:
         daily_forecast = daily_forecast.drop(columns=["day"])
         
         return daily_forecast
-    
+
     def get_historical_data(self, lat: float = None, lon: float = None, 
                            start_date: datetime = None, end_date: datetime = None) -> pd.DataFrame:
         """
