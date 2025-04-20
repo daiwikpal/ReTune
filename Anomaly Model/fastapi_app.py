@@ -12,28 +12,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-# Define the Regressor class directly to avoid import issues
-class Regressor(nn.Module):
-    def __init__(self, typ: str, in_sz: int, hidden_size=16, dropout=0.1):
-        super().__init__()
-        rnn = nn.LSTM if typ == "lstm" else nn.GRU
-        self.rnn = rnn(in_sz, hidden_size, batch_first=True)
-        self.dropout = nn.Dropout(dropout)
-        self.fc = nn.Linear(hidden_size, 1)
-        
-        # Initialize weights
-        for name, param in self.rnn.named_parameters():
-            if 'weight' in name:
-                nn.init.xavier_uniform_(param)
-            elif 'bias' in name:
-                nn.init.zeros_(param)
-        nn.init.xavier_uniform_(self.fc.weight)
-        nn.init.zeros_(self.fc.bias)
+from Model.lstm_model import Regressor
 
-    def forward(self, x):
-        out, _ = self.rnn(x)
-        out = self.dropout(out[:, -1, :])  # Apply dropout after RNN
-        return self.fc(out)      # last time‑step
 
 # Path to the saved model
 MODEL_PATH = Path(__file__).parent / "saved_models" / "lstm_stride1_valMAE1.5575.pkl"
