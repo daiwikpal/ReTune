@@ -29,7 +29,7 @@ class DataProcessor:
         """
         self.noaa_client = None
         self.openweather_client = OpenWeatherClient()
-        self.ncei_client = None
+        self.ncei_client = NCEIClient()
         
         # Create data directory if it doesn't exist
         os.makedirs(config.DATA_DIR, exist_ok=True)
@@ -43,26 +43,35 @@ class DataProcessor:
         if os.path.exists(config.OUTPUT_FILE):
             logger.info(f"Found existing data file at {config.OUTPUT_FILE}, loading instead of refetching")
             return pd.read_csv(config.OUTPUT_FILE)
+
         if start_date is None:
             start_date = config.HISTORICAL_START_DATE
         if end_date is None:
             end_date = config.HISTORICAL_END_DATE
-            
+
         logger.info(f"Collecting historical data from {start_date} to {end_date}")
-        
-        # Fetch NOAA daily data only  // CHANGE: Remove fetching of NCEI data.
-        logger.info("Fetching NOAA daily data...")
+
+        # Initialize NOAA client
         if self.noaa_client is None:
             self.noaa_client = NOAAClient()
+
+        # Fetch NOAA daily data
+        logger.info("Fetching NOAA daily data...")
         noaa_data = self.noaa_client.get_daily_data(start_date, end_date)
 
-        
-        # Debug: Save NOAA data for inspection.
+        if noaa_data.empty:
+            logger.warning("NOAA data is empty!")
+            return pd.DataFrame()
+
+        if "date" not in noaa_data.columns:
+            logger.warning("NOAA data missing 'date' column. Attempting to create it from index...")
+            noaa_data["date"] = pd.to_datetime(noaa_data.index)
+
         debug_path = os.path.join(config.DATA_DIR, "_debug_noaa.csv")
         noaa_data.to_csv(debug_path, index=False)
         logger.info(f"Saved NOAA debug data to: {debug_path}")
-        
-        # Rename NOAA columns to match our model naming conventions.
+
+        # Rename columns
         noaa_renamed = noaa_data.rename(columns={
             "PRCP": "precipitation",
             "TMAX": "temperature_max",
@@ -70,8 +79,12 @@ class DataProcessor:
             "TAVG": "temperature_avg",
             "AWND": "wind_speed",
         })
-        
+
+        if "date" not in noaa_renamed.columns:
+            raise ValueError("NOAA data is missing the 'date' column even after attempt to fix.")
+
         return noaa_renamed.sort_values("date")
+
 
     
     def collect_forecast_data(self, days: int = None) -> pd.DataFrame:
@@ -177,15 +190,19 @@ class DataProcessor:
         """
         if filename is None:
             filename = config.OUTPUT_FILE
-            
-        # Create directory if it doesn't exist
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        
-        # Save to CSV
-        data.to_csv(filename, index=False)
-        logger.info(f"Data saved to {filename}")
-        
-        return filename
+
+        # build absolute path to <project_root>/filename
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        absolute_path = os.path.join(project_root, filename)
+
+        # ensure parent dir exists
+        os.makedirs(os.path.dirname(absolute_path), exist_ok=True)
+
+        # write CSV
+        data.to_csv(absolute_path, index=False)
+        logger.info(f"Data saved to {absolute_path}")
+
+        return absolute_path
     
     def _combine_historical_data(self, 
                                 noaa_data: pd.DataFrame, 
@@ -277,44 +294,54 @@ class DataProcessor:
     def _create_features(self, data: pd.DataFrame) -> pd.DataFrame:
         """
         Create additional features for the model.
-        
+
         Args:
             data: DataFrame with basic features
-            
+
         Returns:
             DataFrame with additional features
         """
         featured_data = data.copy()
-    
-        if 'date' in featured_data.columns:
-            featured_data["year"] = featured_data["date"].dt.year
+
+        # Ensure 'date' column is datetime
+        if "date" in featured_data.columns:
+            if not np.issubdtype(featured_data["date"].dtype, np.datetime64):
+                featured_data["date"] = pd.to_datetime(featured_data["date"], errors="coerce")
+            
             featured_data["month"] = featured_data["date"].dt.month
             featured_data["day"] = featured_data["date"].dt.day
             featured_data["dayofyear"] = featured_data["date"].dt.dayofyear
-            
             featured_data["season"] = featured_data["month"].apply(
-                lambda x: 1 if x in [12, 1, 2] else 2 if x in [3, 4, 5] else 3 if x in [6, 7, 8] else 4
+                lambda x: 1 if x in [12, 1, 2]
+                        else 2 if x in [3, 4, 5]
+                        else 3 if x in [6, 7, 8]
+                        else 4
             )
         else:
             logger.warning("'date' column not found. Cannot create date-based features.")
-
         if "temperature_max" in featured_data.columns and "temperature_min" in featured_data.columns:
-            featured_data["temperature_range"] = featured_data["temperature_max"] - featured_data["temperature_min"]
-        
-        if "precipitation" in featured_data.columns:
+            featured_data["temperature_range"] = (
+                featured_data["temperature_max"] - featured_data["temperature_min"]
+            )
+
+        if "precipitation" in featured_data.columns and not featured_data["precipitation"].isna().all():
             featured_data["precipitation_lag1"] = featured_data["precipitation"].shift(1)
             featured_data["precipitation_lag2"] = featured_data["precipitation"].shift(2)
             featured_data["precipitation_lag3"] = featured_data["precipitation"].shift(3)
             featured_data["precipitation_lag7"] = featured_data["precipitation"].shift(7)
-            
-            # Rolling statistics
-            featured_data["precipitation_rolling_mean_7d"] = featured_data["precipitation"].rolling(window=7).mean()
-            featured_data["precipitation_rolling_max_7d"] = featured_data["precipitation"].rolling(window=7).max()
-        
-        # Fill NaN values!
+            featured_data["precipitation_rolling_mean_7d"] = (
+                featured_data["precipitation"].rolling(window=7).mean()
+            )
+            featured_data["precipitation_rolling_max_7d"] = (
+                featured_data["precipitation"].rolling(window=7).max()
+            )
+        else:
+            logger.warning("Cannot compute lag/rolling features: 'precipitation' column missing or empty.")
+
         featured_data = self._fill_missing_values(featured_data)
-        
+
         return featured_data
+
     
     def _select_features(self, data: pd.DataFrame) -> pd.DataFrame:
         """
@@ -365,6 +392,55 @@ class DataProcessor:
         
         return normalized_data, scalers
 
+    def collect_ncei_data(self, start_date: str, end_date: str, save_path: str = "data/ncei_weather_data.csv") -> pd.DataFrame:
+        """
+        Collect historical monthly precipitation data from NCEI and save to a separate file.
+        
+        Args:
+            start_date: Start date in YYYY-MM-DD format
+            end_date: End date in YYYY-MM-DD format
+            save_path: Path to save the CSV
+            
+        Returns:
+            DataFrame with NCEI monthly precipitation data
+        """
+        logger.info(f"Collecting NCEI data from {start_date} to {end_date}")
+        
+        df = self.ncei_client.get_historical_monthly_precipitation(years=3)
+        
+        if df.empty:
+            logger.warning("No NCEI data returned.")
+            return df
+        
+        # standardized output!
+        df = df.rename(columns={
+            "TimeStamp": "date",
+            "PRECIPITATION": "precipitation"
+        })
+        df["date"] = pd.to_datetime(df["date"])
+
+        # Save it to file
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        absolute_save = os.path.join(project_root, save_path)
+        os.makedirs(os.path.dirname(absolute_save), exist_ok=True)
+        df.to_csv(absolute_save, index=False)
+        logger.info(f"NCEI data saved to {absolute_save}")
+
+        return df
+
+    def test_save_csv(self, save_path: str = "data/test_output.csv") -> None:
+        """
+        Test saving a dummy DataFrame to verify directory path works.
+        """
+        dummy_df = pd.DataFrame({
+            "date": ["2024-01-01", "2024-02-01"],
+            "precipitation": [1.23, 4.56]
+        })
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        dummy_df.to_csv(save_path, index=False)
+        logger.info(f"✅ Dummy data saved to {save_path}")
+
+
 
 if __name__ == "__main__":
     processor = DataProcessor()
@@ -374,3 +450,7 @@ if __name__ == "__main__":
     processor.save_data(prepared_data, "data/nyc_weather_data.csv")
     X, y, scalers = processor.create_sequences(prepared_data, sequence_length=30)
     print(f"X shape: {X.shape}, y shape: {y.shape}")
+    # Collect and save NCEI data separately
+    ncei_data = processor.collect_ncei_data("2020-01-01", "2022-12-31")
+    print(f"NCEI Data shape: {ncei_data.shape}")
+

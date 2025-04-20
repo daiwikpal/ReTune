@@ -1,28 +1,25 @@
 from datetime import datetime
+import math
+import os
 import numpy as np
 import pandas as pd
 import config
 from weather_data.data_processor import DataProcessor
 from model import PrecipitationModel
+from model import FEATURE_COLUMNS
 
 def predict_precip_for_month(target_month: str) -> float:
     seq_len = config.SEQUENCE_LENGTH
     model = PrecipitationModel(sequence_length=seq_len)
     model.load_model()
 
-    df = pd.read_csv(config.OUTPUT_FILE)
+    ncei_path = os.path.join(config.DATA_DIR, "ncei_weather_data.csv")
+    df = pd.read_csv(ncei_path, parse_dates=["date"])
     df["date"] = pd.to_datetime(df["date"])
     monthly = (
         df.set_index("date")
           .resample("M")
-          .agg({
-              "precipitation": "sum",
-              "temperature_max": "mean",
-              "temperature_min": "mean",
-              "humidity": "mean",
-              "wind_speed": "mean",
-              "pressure": "mean"
-          })
+          .agg({ "precipitation": "sum" })   # only precipitation exists!
           .reset_index()
     )
 
@@ -37,10 +34,11 @@ def predict_precip_for_month(target_month: str) -> float:
         monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
 
     monthly = monthly.dropna().reset_index(drop=True)
+    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
 
     proc = DataProcessor()
     X_all, y_all, scalers = proc.create_sequences(
-        monthly,
+        monthly_selected,
         sequence_length=seq_len,
         target_column="precipitation"
     )
@@ -60,14 +58,19 @@ def predict_precip_for_month(target_month: str) -> float:
         y_next_norm = model.predict(last_seq.reshape(1, *last_seq.shape))
         y_next = y_next_norm.flatten()[0]
 
-        # construct the new input step
-        new_step = [0.0] * last_seq.shape[1]
-        precip_index = list(scalers.keys()).index("precipitation")
-        new_step[precip_index] = y_next
-        last_seq = np.vstack([last_seq[1:], new_step])
+        # build the next timestep (normalized)
+        precip_index = FEATURE_COLUMNS.index("precipitation")
+        base = last_seq[-1].copy()        # last timestep’s features
+        base[precip_index] = y_next       # inject the prediction
+
+        # slide the window forward by one month
+        last_seq = np.vstack([last_seq[1:], base])
 
     # final inverse transform
     total_rain = scalers["precipitation"].inverse_transform([[y_next]])[0][0]
+    if not math.isfinite(total_rain):
+        raise ValueError("Model produced NaN or infinite precipitation")
+
     return round(float(total_rain), 4)
 
 

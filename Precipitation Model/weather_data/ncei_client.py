@@ -1,331 +1,321 @@
-"""
-Client for interacting with the NCEI Global Hourly Data API.
-"""
 import requests
 import pandas as pd
-from datetime import datetime, timedelta
-import time
+from datetime import datetime, timedelta, date
 import os
-import logging
-from typing import Dict, List, Any, Optional
+import time
+import calendar
+from typing import List, Dict, Optional, Any, Union
 import io
 from dotenv import load_dotenv
-
 import sys
+import logging
+
+# Add parent directory to path to allow importing config
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import config
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# Set up logging
 logger = logging.getLogger(__name__)
 
 class NCEIClient:
-    """
-    Client for fetching hourly surface observations from NCEI Global Hourly Data.
-    """
+    """Client for interacting with NCEI's Climate Data Online API"""
     
-    def __init__(self):
+    def __init__(self, token: Optional[str] = None, log_level: int = logging.INFO):
         """
-        Initialize the NCEI Global Hourly Data client.
-        """
-        load_dotenv()
-        self.token = os.getenv("NOAA_API_TOKEN")
-        if not self.token:
-            logger.warning("NOAA_API_TOKEN not set. NCEI requests will fail if attempted.") # fix so it won't fail immediately
-        self.base_url = "https://www.ncei.noaa.gov/cdo-web/api/v2/data"
-
-        self.dataset = config.NCEI_DATASET
-        self.station = config.NCEI_STATION
-    
-    def get_hourly_data(self, 
-                       start_date: str, 
-                       end_date: str, 
-                       station_id: str = None) -> pd.DataFrame:
-        """
-        Get hourly weather data for a specific time period and station.
+        Initialize the NCEI client with an API token
         
         Args:
-            start_date: Start date in YYYY-MM-DD format
-            end_date: End date in YYYY-MM-DD format
-            station_id: ID of the weather station
+            token: API token for NCEI (optional if in environment)
+            log_level: Logging level (default: INFO)
+        """
+        # Configure logger
+        self._configure_logger(log_level)
+        
+        self.base_url = "https://www.ncei.noaa.gov/cdo-web/api/v2/data"
+        self.pathToEnv = os.path.join(os.path.dirname(__file__), '..', '.env')
+        load_dotenv(dotenv_path=self.pathToEnv)
+        self.token = token or os.getenv("NOAA_API_TOKEN")  # Using the same token as NOAA
+        if not self.token:
+            logger.error("API token not found in constructor or environment")
+            raise ValueError("API token is required. Set it in the constructor or as NOAA_API_TOKEN environment variable")
+        
+        # Station ID for precipitation data
+        self.station_id = "GHCND:USW00094728"  # Central Park, NY
+        self.dataset_id = "GHCND"  # Global Historical Climatology Network Daily
+        self.datatype_id = "PRCP"  # Precipitation
+        self.page_limit = 1000  # API page size limit
+        
+        logger.info(f"NCEI Client initialized (Station: {self.station_id})")
+    
+    def _configure_logger(self, log_level: int):
+        """Configure the logger with appropriate handlers and formatting"""
+        logger.setLevel(log_level)
+        
+        # Clear existing handlers if any
+        if logger.handlers:
+            logger.handlers = []
+            
+        # Create console handler
+        ch = logging.StreamHandler()
+        ch.setLevel(log_level)
+        
+        # Create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        
+        # Add handler to logger
+        logger.addHandler(ch)
+    
+    def get_monthly_precipitation(self, start_date: Union[str, date], end_date: Union[str, date]) -> pd.DataFrame:
+        """
+        Fetch monthly precipitation data for NYC (Central Park)
+        
+        Args:
+            start_date: Start date in YYYY-MM-DD format or date object
+            end_date: End date in YYYY-MM-DD format or date object
             
         Returns:
-            DataFrame with hourly weather data
+            DataFrame with monthly precipitation data (in inches)
         """
-        if not station_id:
-            station_id = self.station
+        # Convert string dates to date objects if needed
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
             
-        # Format dates for NCEI API
-        start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
-        end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
+        logger.info(f"Requesting NCEI precipitation data from {start_date} to {end_date}")
         
-        # NCEI API has a limit on the time range, so we'll fetch data in chunks
-        max_days_per_request = 30
+        # Get precipitation data
+        total_precip_inches = self._get_total_precipitation(start_date, end_date)
         
-        all_data = []
-        current_start = start_date_obj
+        # Create DataFrame with monthly data
+        monthly_data = []
         
-        while current_start <= end_date_obj:
-            # Calculate end date for this chunk
-            current_end = min(current_start + timedelta(days=max_days_per_request), end_date_obj)
+        # Get the first day of the month for the start date
+        current_month_start = date(start_date.year, start_date.month, 1)
+        logger.info(f"Processing data month by month starting from {current_month_start}")
+        
+        month_count = 0
+        while current_month_start <= end_date:
+            # Calculate the last day of the current month
+            if current_month_start.month == 12:
+                next_month = date(current_month_start.year + 1, 1, 1)
+            else:
+                next_month = date(current_month_start.year, current_month_start.month + 1, 1)
             
-            # Format dates for API request
-            current_start_str = current_start.strftime("%Y-%m-%d")
-            current_end_str = current_end.strftime("%Y-%m-%d")
+            current_month_end = next_month - timedelta(days=1)
             
-            logger.info(f"Fetching NCEI data from {current_start_str} to {current_end_str}")
-            
-            # Construct request parameters
-            params = {
-                "datasetid": self.dataset,
-                "stationid": station_id,
-                "startDate": current_start_str,
-                "endDate": current_end_str,
-                "format": "csv",
-                "includeAttributes": "true",
-                "includeStationName": "true",
-                "includeStationLocation": "true",
-                "units": "standard",  # Use standard units
-            }
-            
-            # Make the request
-            response = self._make_request(self.base_url, params)
-            
-            if response:
-                # Parse CSV data
+            # Only process if month is within our date range
+            if current_month_end >= start_date:
+                # Adjust range for partial months
+                range_start = max(start_date, current_month_start)
+                range_end = min(end_date, current_month_end)
+                
+                logger.debug(f"Processing month: {current_month_start.year}-{current_month_start.month:02d}")
+                
                 try:
-                    df = pd.read_csv(io.StringIO(response))
-                    all_data.append(df)
+                    # Get precipitation for this month
+                    month_precip = self._get_total_precipitation(range_start, range_end)
+                    
+                    # Add to our monthly data
+                    monthly_data.append({
+                        'TimeStamp': f"{current_month_start.year}-{current_month_start.month:02d}",
+                        'PRECIPITATION': month_precip
+                    })
+                    
+                    month_count += 1
+                    logger.debug(f"Month {current_month_start.year}-{current_month_start.month:02d}: {month_precip:.2f} inches")
+                    
+                    # Log progress every few months
+                    if month_count % 5 == 0:
+                        logger.info(f"Processed {month_count} months so far")
+                        
                 except Exception as e:
-                    logger.error(f"Error parsing CSV data: {e}")
+                    logger.error(f"Error getting precipitation for {current_month_start.year}-{current_month_start.month:02d}: {str(e)}")
             
-            # Move to next chunk
-            current_start = current_end + timedelta(days=1)
+            # Move to next month
+            if current_month_start.month == 12:
+                current_month_start = date(current_month_start.year + 1, 1, 1)
+            else:
+                current_month_start = date(current_month_start.year, current_month_start.month + 1, 1)
+        
+        # Convert to DataFrame
+        if monthly_data:
+            df = pd.DataFrame(monthly_data)
+            logger.info(f"Created monthly precipitation DataFrame with {len(df)} months of data")
+            return df
+        else:
+            logger.warning(f"No precipitation data found for period {start_date} to {end_date}")
+            return pd.DataFrame()
+    
+    def get_historical_monthly_precipitation(self, years: int = 30) -> pd.DataFrame:
+        """
+        Fetch historical monthly precipitation data from January 1996 to present
+        
+        Args:
+            years: Number of years of historical data to fetch (default: 30, but will always go back to at least 1996)
             
-            # Respect rate limits
-            time.sleep(1)
+        Returns:
+            DataFrame with monthly precipitation data (in inches)
+        """
+        end_date = date.today()
+        
+        # Calculate start date based on years parameter
+        calculated_start = date(end_date.year - years, end_date.month, 1)
+        
+        # Ensure we go back to at least January 1996
+        min_start_date = date(1996, 1, 1)
+        start_date = min(calculated_start, min_start_date)
+        
+        logger.info(f"Current system date: {datetime.now().strftime('%Y-%m-%d')}")
+        logger.info(f"Fetching NCEI historical data from {start_date} to {end_date} ({years} years)")
+        
+        # Split into multiple requests with smaller time ranges to avoid API limitations
+        all_data = []
+        current_start = start_date
+        
+        # Process one year at a time to avoid timeout issues
+        total_years = end_date.year - start_date.year + 1
+        year_count = 0
+        
+        while current_start < end_date:
+            year_count += 1
+            # End date is either Dec 31 of current year or today if it's the current year
+            if current_start.year == end_date.year:
+                current_end = end_date
+            else:
+                current_end = date(current_start.year, 12, 31)
+            
+            logger.info(f"Fetching year {current_start.year} data ({year_count}/{total_years})")
+            
+            try:
+                # Get data for this year
+                chunk_data = self.get_monthly_precipitation(current_start, current_end)
+                
+                if not chunk_data.empty:
+                    logger.info(f"Got data for year {current_start.year}: {len(chunk_data)} months")
+                    all_data.append(chunk_data)
+                else:
+                    logger.warning(f"No data found for year {current_start.year}")
+            except Exception as e:
+                logger.error(f"Error processing year {current_start.year}: {str(e)}")
+            
+            # Move to the next year
+            current_start = date(current_start.year + 1, 1, 1)
         
         if not all_data:
-            logger.warning(f"No data found for the specified parameters")
+            logger.error("No precipitation data found for the entire requested period")
             return pd.DataFrame()
-        
+            
         # Combine all chunks
+        logger.info(f"Combining data from {len(all_data)} years")
         combined_df = pd.concat(all_data, ignore_index=True)
         
-        # Process the data
-        processed_df = self._process_hourly_data(combined_df)
+        # Remove duplicates if any
+        dupe_count = combined_df.duplicated(subset=['TimeStamp']).sum()
+        if dupe_count > 0:
+            logger.info(f"Removing {dupe_count} duplicate monthly records")
+            combined_df = combined_df.drop_duplicates(subset=['TimeStamp'])
         
-        return processed_df
+        # Sort by TimeStamp
+        combined_df['date_for_sort'] = pd.to_datetime(combined_df['TimeStamp'])
+        combined_df = combined_df.sort_values('date_for_sort')
+        combined_df = combined_df.drop('date_for_sort', axis=1)
+        
+        logger.info(f"Final historical precipitation dataset contains {len(combined_df)} months from {combined_df['TimeStamp'].min()} to {combined_df['TimeStamp'].max()}")
+        return combined_df
     
-    def get_daily_aggregated_data(self, 
-                                 start_date: str, 
-                                 end_date: str, 
-                                 station_id: str = None) -> pd.DataFrame:
+    def _get_total_precipitation(self, start: date, end: date) -> float:
         """
-        Get daily aggregated weather data from hourly observations.
+        Get the total precipitation in inches between start and end dates (inclusive).
         
         Args:
-            start_date: Start date in YYYY-MM-DD format
-            end_date: End date in YYYY-MM-DD format
-            station_id: ID of the weather station
+            start: Start date
+            end: End date
             
         Returns:
-            DataFrame with daily aggregated weather data
+            Total precipitation in inches
         """
-        hourly_data = self.get_hourly_data(start_date, end_date, station_id)
+        if start > end:
+            logger.error(f"Invalid date range: {start} > {end}")
+            raise ValueError("Start date must be before or equal to end date")
         
-        if hourly_data.empty:
-            return pd.DataFrame()
+        logger.debug(f"Fetching precipitation data for {start} to {end}")
         
-        # Create date column without time
-        hourly_data["date"] = pd.to_datetime(hourly_data["DATE"]).dt.date
+        headers = {"token": self.token}
+        params = {
+            "datasetid": self.dataset_id,
+            "datatypeid": self.datatype_id,
+            "stationid": self.station_id,
+            "startdate": start.isoformat(),
+            "enddate": end.isoformat(),
+            "units": "standard",  # Gets data in tenths of inches
+            "limit": self.page_limit,
+        }
         
-        # Aggregate by date
-        daily_data = hourly_data.groupby("date").agg({
-            "TMP": "mean",  # Mean temperature
-            "DEW": "mean",  # Mean dew point
-            "SLP": "mean",  # Mean sea level pressure
-            "WND_SPEED": "mean",  # Mean wind speed
-            "WND_DIRECTION": lambda x: self._mean_direction(x),  # Mean wind direction
-            "CIG": "mean",  # Mean ceiling height
-            "VIS": "mean",  # Mean visibility
-            "PRECIP": "sum",  # Total precipitation
-            "RH": "mean",  # Mean relative humidity
-        }).reset_index()
+        total_inches = 0.0
+        offset = 1
+        page_count = 0
         
-        # Rename columns for clarity
-        daily_data = daily_data.rename(columns={
-            "TMP": "temperature_avg",
-            "DEW": "dew_point",
-            "SLP": "pressure",
-            "WND_SPEED": "wind_speed",
-            "WND_DIRECTION": "wind_direction",
-            "CIG": "ceiling_height",
-            "VIS": "visibility",
-            "PRECIP": "precipitation",
-            "RH": "humidity",
-        })
+        while True:
+            page_count += 1
+            params["offset"] = offset
+            try:
+                logger.debug(f"Making API request with offset {offset} (page {page_count})")
+                response = requests.get(self.base_url, headers=headers, params=params, timeout=30)
+                
+                # For debugging
+                logger.debug(f"Request → {response.request.method} {response.request.url}")
+                
+                response.raise_for_status()
+                data = response.json()
+                
+                results = data.get("results", [])
+                if not results:
+                    logger.debug("No results found in response")
+                else:
+                    
+                    page_precip = sum(r["value"] for r in results) 
+                    total_inches += page_precip
+                    logger.debug(f"Page {page_count} has {len(results)} records, {page_precip:.2f} inches")
+                
+                if len(results) < self.page_limit:
+                    logger.debug(f"End of pagination reached after {page_count} pages")
+                    break
+                    
+                offset += self.page_limit
+                
+                # Respect rate limits with a small delay
+                time.sleep(0.5)
+                
+            except requests.exceptions.RequestException as e:
+                logger.error(f"API request failed: {str(e)}")
+                # Return partial data if we've already got some
+                if total_inches > 0:
+                    logger.warning(f"Returning partial data ({total_inches:.2f} inches)")
+                    return total_inches
+                raise
         
-        # Convert date to datetime
-        daily_data["date"] = pd.to_datetime(daily_data["date"])
-        
-        return daily_data
+        logger.debug(f"Total precipitation for {start} to {end}: {total_inches:.2f} inches")
+        return total_inches
     
-    def _process_hourly_data(self, df: pd.DataFrame) -> pd.DataFrame:
+    def get_month_total(self, year: int, month: int) -> float:
         """
-        Process hourly data from NCEI.
+        Get total precipitation in inches for a specific month and year.
         
         Args:
-            df: DataFrame with raw NCEI data
+            year: Year (e.g., 2024)
+            month: Month (1-12)
             
         Returns:
-            Processed DataFrame
+            Total precipitation in inches for the month
         """
-        # Create a copy to avoid modifying the original
-        processed = df.copy()
-        
-        # Convert date to datetime
-        processed["DATE"] = pd.to_datetime(processed["DATE"])
-        
-        # Process temperature (in tenths of degrees C)
-        if "TMP" in processed.columns:
-            processed["TMP"] = pd.to_numeric(processed["TMP"], errors="coerce") / 10.0
-            # Convert to Fahrenheit for consistency
-            processed["TMP"] = processed["TMP"] * 9/5 + 32
-        
-        # Process dew point (in tenths of degrees C)
-        if "DEW" in processed.columns:
-            processed["DEW"] = pd.to_numeric(processed["DEW"], errors="coerce") / 10.0
-            # Convert to Fahrenheit for consistency
-            processed["DEW"] = processed["DEW"] * 9/5 + 32
-        
-        # Process sea level pressure (in tenths of hPa)
-        if "SLP" in processed.columns:
-            processed["SLP"] = pd.to_numeric(processed["SLP"], errors="coerce") / 10.0
-        
-        # Process wind data
-        if "WND" in processed.columns:
-            # WND format: direction,direction_quality,type_code,speed,speed_quality
-            processed["WND_DIRECTION"] = processed["WND"].str.split(",").str[0].astype(float)
-            processed["WND_SPEED"] = processed["WND"].str.split(",").str[3].astype(float) / 10.0  # Convert to m/s
-            # Convert to mph for consistency
-            processed["WND_SPEED"] = processed["WND_SPEED"] * 2.237
-        
-        # Process precipitation (in mm)
-        if "AA1" in processed.columns:
-            # AA1 format: period,depth,condition,quality
-            processed["PRECIP"] = processed["AA1"].str.split(",").str[1].replace("", "0").astype(float)
-            # Convert to inches for consistency
-            processed["PRECIP"] = processed["PRECIP"] / 25.4
-        else:
-            processed["PRECIP"] = 0
-        
-        # Process ceiling height (in meters)
-        if "CIG" in processed.columns:
-            processed["CIG"] = pd.to_numeric(processed["CIG"], errors="coerce")
-        
-        # Process visibility (in meters)
-        if "VIS" in processed.columns:
-            processed["VIS"] = pd.to_numeric(processed["VIS"], errors="coerce")
-        
-        # Calculate relative humidity from temperature and dew point
-        if "TMP" in processed.columns and "DEW" in processed.columns:
-            processed["RH"] = self._calculate_rh(processed["TMP"], processed["DEW"])
-        
-        return processed
-    
-    def _calculate_rh(self, temp_f: pd.Series, dew_f: pd.Series) -> pd.Series:
-        """
-        Calculate relative humidity from temperature and dew point (both in Fahrenheit).
-        
-        Args:
-            temp_f: Temperature in Fahrenheit
-            dew_f: Dew point in Fahrenheit
+        if month not in range(1, 13):
+            logger.error(f"Invalid month: {month}")
+            raise ValueError("Month must be 1-12")
             
-        Returns:
-            Relative humidity as percentage
-        """
-        # Convert to Celsius for the calculation
-        temp_c = (temp_f - 32) * 5/9
-        dew_c = (dew_f - 32) * 5/9
+        start_date = date(year, month, 1)
+        end_date = date(year, month, calendar.monthrange(year, month)[1])
         
-        # Calculate saturation vapor pressure
-        svp = 6.11 * 10.0 ** (7.5 * temp_c / (237.3 + temp_c))
-        
-        # Calculate actual vapor pressure
-        avp = 6.11 * 10.0 ** (7.5 * dew_c / (237.3 + dew_c))
-        
-        # Calculate relative humidity
-        rh = (avp / svp) * 100
-        
-        return rh
-    
-    def _mean_direction(self, directions: pd.Series) -> float:
-        """
-        Calculate the mean of circular wind directions.
-        
-        Args:
-            directions: Series of wind directions in degrees
-            
-        Returns:
-            Mean wind direction in degrees
-        """
-        import numpy as np
-        
-        # Convert to radians
-        rad = np.radians(directions)
-        
-        # Calculate mean of sin and cos components
-        sin_mean = np.nanmean(np.sin(rad))
-        cos_mean = np.nanmean(np.cos(rad))
-        
-        # Convert back to degrees
-        degrees = np.degrees(np.arctan2(sin_mean, cos_mean))
-        
-        # Ensure result is in [0, 360)
-        return (degrees + 360) % 360
-    
-    def _make_request(self, url: str, params: Dict[str, Any]) -> str:
-        """
-        Make a request to the NCEI API with error handling.
-        
-        Args:
-            url: API URL
-            params: Query parameters
-            
-        Returns:
-            Response text (CSV data)
-        """
-        try:
-            response = requests.get(url, headers={"token": self.token}, params=params)
-            response.raise_for_status()
-            return response.text
-            
-        except requests.exceptions.HTTPError as e:
-            logger.error(f"HTTP error: {e}")
-            return ""
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Request error: {e}")
-            return ""
-
-
-if __name__ == "__main__":
-    # Example usage
-    client = NCEIClient()
-
-    # Set test dates
-    start = "2022-01-01"
-    end = "2022-01-10"
-
-    # Fetch daily aggregated data
-    daily_data = client.get_daily_aggregated_data(start, end)
-
-    # Check if data is returned
-    if not daily_data.empty:
-        # Save to CSV
-        output_path = "ncei_daily_weather_data.csv"
-        daily_data.to_csv(output_path, index=False)
-        print(f"CSV saved to: {output_path}")
-        print(daily_data.head())
-    else:
-        print("No data was returned.")
+        logger.info(f"Getting precipitation total for {year}-{month:02d}")
+        return self._get_total_precipitation(start_date, end_date) 
