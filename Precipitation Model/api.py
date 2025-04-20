@@ -1,3 +1,4 @@
+import math
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from typing import Optional
@@ -6,6 +7,17 @@ import pandas as pd
 from model import PrecipitationModel, DataProcessor, train_precipitation_model
 import config
 from predict import predict_precip_for_month
+
+DATA_FILE = config.NCEI_DATA_FILE
+
+FEATURE_COLUMNS = [
+    "precipitation",
+    "month",
+    "season",
+    "precipitation_lag1",
+    "precipitation_lag2",
+    "precipitation_lag3",
+]
 
 
 app = FastAPI()
@@ -18,43 +30,34 @@ X, y, scalers = None, None, None
 @app.on_event("startup")
 def load_resources():
     global processor, model, data, X, y, scalers
+
     processor = DataProcessor()
-    model = PrecipitationModel(sequence_length=12)
+    model      = PrecipitationModel(sequence_length=12)
     model.load_model()
 
-    # api.py → load_resources()
-    raw = pd.read_csv(config.OUTPUT_FILE, parse_dates=["date"])
-    raw = raw.set_index("date")
+    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
 
-    # 1) aggregate to month:
-    monthly = raw.resample("M").agg({
-        "precipitation": "sum",
-        "temperature_max": "mean",
-        "temperature_min": "mean",
-        "humidity": "mean",
-        "wind_speed": "mean",
-        "pressure": "mean",
-    }).reset_index()
+    raw["month"]  = raw["date"].dt.month
+    raw["season"] = raw["month"].map(lambda m:
+                        1 if m in [12, 1, 2] else
+                        2 if m in [3, 4, 5] else
+                        3 if m in [6, 7, 8] else 4)
 
-    # 2) add month/season + lag features (exactly like training!)
-    monthly["month"]  = monthly["date"].dt.month
-    monthly["season"] = monthly["month"].map(lambda m:
-                        1 if m in [12,1,2] else
-                        2 if m in [3,4,5]  else
-                        3 if m in [6,7,8]  else
-                        4)
-    for lag in (1,2,3):
-        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
-    monthly = monthly.dropna().reset_index(drop=True)
+    for lag in (1, 2, 3):
+        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
 
-    # 3) build your sequences exactly as you did at training time:
+    monthly = raw.dropna().reset_index(drop=True)
+    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
+
     X, y, scalers = processor.create_sequences(
-        monthly,
-        sequence_length=12,      # must be the same SEQUENCE_LENGTH you trained with
+        monthly_selected,
+        sequence_length=12,
         target_column="precipitation"
     )
+
+    model.set_feature_columns(FEATURE_COLUMNS)
     model.set_scalers(scalers)
-    data = raw
+    data = raw 
 
 @app.get("/")
 def redirect_to_docs():
@@ -64,13 +67,32 @@ def redirect_to_docs():
 def train_model():
     global model, X, y, scalers, data
 
-    model = train_precipitation_model()
-    data = pd.read_csv(config.OUTPUT_FILE)
-    data["date"] = pd.to_datetime(data["date"])
-    X, y, scalers = processor.create_sequences(data, sequence_length=30)
+    model = train_precipitation_model(config.NCEI_DATA_FILE)
+
+    # Reload the same monthly file for fresh scalers
+    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
+
+    raw["month"]  = raw["date"].dt.month
+    raw["season"] = raw["month"].map(lambda m:
+                    1 if m in [12,1,2] else
+                    2 if m in [3,4,5] else
+                    3 if m in [6,7,8] else 4)
+    for lag in (1, 2, 3):
+        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
+
+    raw = raw.dropna().reset_index(drop=True)
+    monthly_selected = raw[["date"] + FEATURE_COLUMNS]
+
+    X, y, scalers = processor.create_sequences(
+        monthly_selected,
+        sequence_length=12,
+        target_column="precipitation"
+    )
+    model.set_feature_columns(FEATURE_COLUMNS)
     model.set_scalers(scalers)
 
-    return {"message": "Model retrained and reloaded."}
+    return {"message": "Model retrained and reloaded with NCEI data."}
+
 
 @app.get("/predict")
 def predict(month: Optional[str] = None):
@@ -79,14 +101,14 @@ def predict(month: Optional[str] = None):
 
     try:
         rain = predict_precip_for_month(month)
-    except ValueError as e:
+        if not math.isfinite(rain):
+            return {"error": "Prediction was NaN/Inf – check training data"}
+    except Exception as e:
         return {"error": str(e)}
-    except Exception:
-        return {"error": "Something went wrong while predicting"}
 
     return {
         "month": month,
-        "predicted_monthly_precipitation_inches": rain
+        "predicted_monthly_precipitation_inches": float(rain)  # ensure JSON‑safe
     }
 
 

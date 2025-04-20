@@ -7,7 +7,6 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import matplotlib.pyplot as plt
 import os
 import logging
 from typing import Dict, List, Any, Optional, Tuple
@@ -15,6 +14,15 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 import config
 from weather_data.data_processor import DataProcessor
+
+FEATURE_COLUMNS = [
+    "precipitation",
+    "month",
+    "season",
+    "precipitation_lag1",
+    "precipitation_lag2",
+    "precipitation_lag3",
+]
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -214,79 +222,7 @@ class PrecipitationModel:
         # Load the model
         self.model = tf.keras.models.load_model(filepath)
         logger.info(f"Model loaded from {filepath}")
-    
-    def plot_training_history(self, history: Dict[str, List[float]], save_path: str = None) -> None:
-        """
-        Plot the training history.
         
-        Args:
-            history: Training history
-            save_path: Path to save the plot
-        """
-        plt.figure(figsize=(12, 5))
-        
-        # Plot loss
-        plt.subplot(1, 2, 1)
-        plt.plot(history['loss'], label='Training Loss')
-        plt.plot(history['val_loss'], label='Validation Loss')
-        plt.title('Model Loss')
-        plt.xlabel('Epoch')
-        plt.ylabel('Loss')
-        plt.legend()
-        
-        # Plot MAE
-        plt.subplot(1, 2, 2)
-        plt.plot(history['mae'], label='Training MAE')
-        plt.plot(history['val_mae'], label='Validation MAE')
-        plt.title('Model MAE')
-        plt.xlabel('Epoch')
-        plt.ylabel('MAE')
-        plt.legend()
-        
-        plt.tight_layout()
-        
-        # Save the plot if a path is provided
-        if save_path:
-            plt.savefig(save_path)
-            logger.info(f"Training history plot saved to {save_path}")
-        
-       # plt.show()
-    
-    def plot_predictions(self, 
-                       dates: pd.Series, 
-                       y_true: np.ndarray, 
-                       y_pred: np.ndarray,
-                       save_path: str = None) -> None:
-        """
-        Plot the actual vs. predicted precipitation.
-        
-        Args:
-            dates: Dates corresponding to the data points
-            y_true: Actual precipitation values
-            y_pred: Predicted precipitation values
-            save_path: Path to save the plot
-        """
-        plt.figure(figsize=(12, 6))
-        
-        plt.plot(dates, y_true, label='Actual Precipitation', marker='o')
-        plt.plot(dates, y_pred, label='Predicted Precipitation', marker='x')
-        
-        plt.title('Actual vs. Predicted Precipitation')
-        plt.xlabel('Date')
-        plt.ylabel('Precipitation (inches)')
-        plt.legend()
-        plt.grid(True)
-        
-        # Rotate date labels for better readability
-        plt.xticks(rotation=45)
-        plt.tight_layout()
-        
-        # Save the plot if a path is provided
-        if save_path:
-            plt.savefig(save_path)
-            logger.info(f"Predictions plot saved to {save_path}")
-        
-        # plt.show()
     
     def set_scalers(self, scalers: Dict) -> None:
         """
@@ -309,99 +245,67 @@ class PrecipitationModel:
 
 def train_precipitation_model(data_path: str = None, sequence_length: int = None) -> PrecipitationModel:
     """
-    Train a precipitation prediction model using data from the specified path.
-    
-    Args:
-        data_path: Path to the processed data CSV
-        sequence_length: Number of time steps in each sequence
-        
-    Returns:
-        Trained PrecipitationModel
+    Train a precipitation prediction model using NCEI-only monthly data.
     """
     if data_path is None:
-        data_path = config.OUTPUT_FILE
-    
+        data_path = config.NCEI_DATA_FILE
+
     if sequence_length is None:
         sequence_length = config.SEQUENCE_LENGTH
-    
-    # Load the data
-    if not os.path.exists(data_path):
-        logger.error(f"Data file not found: {data_path}")
-        # Collect data if file doesn't exist
-        processor = DataProcessor()
-        historical_data = processor.collect_historical_data()
-        forecast_data = processor.collect_forecast_data()
-        prepared_data = processor.prepare_data_for_model(historical_data, forecast_data)
-        processor.save_data(prepared_data, data_path)
-    
+
+    ### NOTE: Read monthly NCEI data directly
     data = pd.read_csv(data_path)
     data["date"] = pd.to_datetime(data["date"])
-    data = data.set_index("date")
+    monthly = data.sort_values("date").copy()
 
-    monthly = data.resample("M").agg({
-        "precipitation": "sum",
-        "temperature_max": "mean",
-        "temperature_min": "mean",
-        # "temperature_avg": "mean",
-        "humidity": "mean",
-        "wind_speed": "mean",
-        "pressure": "mean",
-        # "dew_point": "mean"
-    }).reset_index()
-
+    # Add temporal features
     monthly["month"] = monthly["date"].dt.month
     monthly["season"] = monthly["month"].map(lambda m: 
         1 if m in [12,1,2] else
         2 if m in [3,4,5]  else
-        3 if m in [6,7,8]  else
-        4
+        3 if m in [6,7,8]  else 4
     )
 
-    for lag in (1,2,3):
+    # Add lag features
+    for lag in (1, 2, 3):
         monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
 
     monthly = monthly.dropna().reset_index(drop=True)
 
+
+    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
+
     processor = DataProcessor()
     X, y, scalers = processor.create_sequences(
-        monthly,
-        sequence_length=config.SEQUENCE_LENGTH,
+        monthly_selected,              # <‑‑ use the restricted frame
+        sequence_length=sequence_length,
         target_column="precipitation"
     )
 
     train_size = int(len(X) * config.TRAIN_SPLIT)
     X_train, X_test = X[:train_size], X[train_size:]
     y_train, y_test = y[:train_size], y[train_size:]
-    
     val_size = int(len(X_train) * 0.2)
     X_train, X_val = X_train[:-val_size], X_train[-val_size:]
     y_train, y_val = y_train[:-val_size], y_train[-val_size:]
-    
+
     model = PrecipitationModel(sequence_length)
     model.build_model((X_train.shape[1], X_train.shape[2]))
-    
-    # Train the model
     history = model.train(X_train, y_train, X_val, y_val)
-    
-    # Evaluate the model
     metrics = model.evaluate(X_test, y_test)
-    
-    # Save the model
     model.save_model()
-    
-    # Set scalers and feature columns for later use
     model.set_scalers(scalers)
-    model.set_feature_columns(monthly.drop(columns=["date"]).columns.tolist())
-    model.plot_training_history(history, os.path.join(config.DATA_DIR, "training_history.png"))
+    model.set_feature_columns(FEATURE_COLUMNS)
+
+    # model.plot_training_history(history, os.path.join(config.DATA_DIR, "training_history.png"))
+
     y_pred = model.predict(X_test)
-    # test_dates = data.index[train_size + sequence_length:train_size + sequence_length + len(y_test)]
     test_dates = monthly["date"].iloc[sequence_length + train_size : sequence_length + train_size + len(y_test)]
     y_test_denorm = scalers["precipitation"].inverse_transform(y_test.reshape(-1, 1)).flatten()
     y_pred_denorm = scalers["precipitation"].inverse_transform(y_pred).flatten()
-    
-    # Plot predictions
-    model.plot_predictions(test_dates, y_test_denorm, y_pred_denorm, 
-                         os.path.join(config.DATA_DIR, "predictions.png"))
+
+    # model.plot_predictions(test_dates, y_test_denorm, y_pred_denorm, 
+    #                        os.path.join(config.DATA_DIR, "predictions.png"))
     
     return model
 
