@@ -28,36 +28,48 @@ data: pd.DataFrame
 X, y, scalers = None, None, None
 
 @app.on_event("startup")
+@app.on_event("startup")
 def load_resources():
     global processor, model, data, X, y, scalers
 
     processor = DataProcessor()
-    model      = PrecipitationModel(sequence_length=12)
-    model.load_model()
+    model = PrecipitationModel(sequence_length=12)
 
-    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
+    # Try to load model; okay if not found
+    try:
+        model.load_model()
+    except Exception as e:
+        print(f"⚠️ Warning: Model not loaded at startup — {e}")
 
-    raw["month"]  = raw["date"].dt.month
-    raw["season"] = raw["month"].map(lambda m:
-                        1 if m in [12, 1, 2] else
-                        2 if m in [3, 4, 5] else
-                        3 if m in [6, 7, 8] else 4)
+    # Try to load the data file; okay if not found
+    try:
+        raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
 
-    for lag in (1, 2, 3):
-        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
+        raw["month"]  = raw["date"].dt.month
+        raw["season"] = raw["month"].map(lambda m:
+                            1 if m in [12, 1, 2] else
+                            2 if m in [3, 4, 5] else
+                            3 if m in [6, 7, 8] else 4)
 
-    monthly = raw.dropna().reset_index(drop=True)
-    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
+        for lag in (1, 2, 3):
+            raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
 
-    X, y, scalers = processor.create_sequences(
-        monthly_selected,
-        sequence_length=12,
-        target_column="precipitation"
-    )
+        monthly = raw.dropna().reset_index(drop=True)
+        monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
 
-    model.set_feature_columns(FEATURE_COLUMNS)
-    model.set_scalers(scalers)
-    data = raw 
+        X, y, scalers = processor.create_sequences(
+            monthly_selected,
+            sequence_length=12,
+            target_column="precipitation"
+        )
+
+        model.set_feature_columns(FEATURE_COLUMNS)
+        model.set_scalers(scalers)
+        data = raw
+
+    except FileNotFoundError:
+        print(f"NCEI data file not found at {DATA_FILE}. Model will still work once data is trained.")
+        data, X, y, scalers = None, None, None, None
 
 @app.get("/")
 def redirect_to_docs():
@@ -99,16 +111,19 @@ def predict(month: Optional[str] = None):
     if not month:
         return {"error": "Please provide a month like '2025-06'"}
 
+    if X is None or scalers is None:
+        return {"error": "Model not trained yet. Please train the model first."}
+
     try:
         rain = predict_precip_for_month(month)
         if not math.isfinite(rain):
-            return {"error": "Prediction was NaN/Inf – check training data"}
+            return {"error": "Prediction returned NaN/Inf — check your training data."}
     except Exception as e:
         return {"error": str(e)}
 
     return {
         "month": month,
-        "predicted_monthly_precipitation_inches": float(rain)  # ensure JSON‑safe
+        "predicted_monthly_precipitation_inches": float(rain)
     }
 
 
