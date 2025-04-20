@@ -8,6 +8,8 @@ from model import PrecipitationModel, DataProcessor, train_precipitation_model
 import config
 from predict import predict_precip_for_month
 
+DATA_FILE = config.NCEI_DATA_FILE
+
 FEATURE_COLUMNS = [
     "precipitation",
     "month",
@@ -28,32 +30,23 @@ X, y, scalers = None, None, None
 @app.on_event("startup")
 def load_resources():
     global processor, model, data, X, y, scalers
+
     processor = DataProcessor()
-    model = PrecipitationModel(sequence_length=12)
+    model      = PrecipitationModel(sequence_length=12)
     model.load_model()
 
-    raw = pd.read_csv(config.OUTPUT_FILE, parse_dates=["date"])
-    raw = raw.set_index("date")
+    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
 
-    monthly = raw.resample("M").agg({
-        "precipitation": "sum",
-        "temperature_max": "mean",
-        "temperature_min": "mean",
-        "humidity": "mean",
-        "wind_speed": "mean",
-        "pressure": "mean",
-    }).reset_index()
+    raw["month"]  = raw["date"].dt.month
+    raw["season"] = raw["month"].map(lambda m:
+                        1 if m in [12, 1, 2] else
+                        2 if m in [3, 4, 5] else
+                        3 if m in [6, 7, 8] else 4)
 
-    monthly["month"]  = monthly["date"].dt.month
-    monthly["season"] = monthly["month"].map(lambda m:
-                        1 if m in [12,1,2] else
-                        2 if m in [3,4,5]  else
-                        3 if m in [6,7,8]  else
-                        4)
-    for lag in (1,2,3):
-        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
-    monthly = monthly.dropna().reset_index(drop=True)
+    for lag in (1, 2, 3):
+        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
 
+    monthly = raw.dropna().reset_index(drop=True)
     monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
 
     X, y, scalers = processor.create_sequences(
@@ -61,9 +54,10 @@ def load_resources():
         sequence_length=12,
         target_column="precipitation"
     )
+
     model.set_feature_columns(FEATURE_COLUMNS)
     model.set_scalers(scalers)
-    data = raw
+    data = raw 
 
 @app.get("/")
 def redirect_to_docs():
@@ -73,32 +67,21 @@ def redirect_to_docs():
 def train_model():
     global model, X, y, scalers, data
 
-    model = train_precipitation_model()
+    model = train_precipitation_model(config.NCEI_DATA_FILE)
 
-    # Re-load raw data
-    raw = pd.read_csv(config.OUTPUT_FILE, parse_dates=["date"])
-    raw = raw.set_index("date")
+    # Reload the same monthly file for fresh scalers
+    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
 
-    monthly = raw.resample("M").agg({
-        "precipitation": "sum",
-        "temperature_max": "mean",
-        "temperature_min": "mean",
-        "humidity": "mean",
-        "wind_speed": "mean",
-        "pressure": "mean",
-    }).reset_index()
-
-    monthly["month"] = monthly["date"].dt.month
-    monthly["season"] = monthly["month"].map(lambda m:
-        1 if m in [12,1,2] else
-        2 if m in [3,4,5]  else
-        3 if m in [6,7,8]  else 4)
+    raw["month"]  = raw["date"].dt.month
+    raw["season"] = raw["month"].map(lambda m:
+                    1 if m in [12,1,2] else
+                    2 if m in [3,4,5] else
+                    3 if m in [6,7,8] else 4)
     for lag in (1, 2, 3):
-        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
-    monthly = monthly.dropna().reset_index(drop=True)
+        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
 
-
-    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
+    raw = raw.dropna().reset_index(drop=True)
+    monthly_selected = raw[["date"] + FEATURE_COLUMNS]
 
     X, y, scalers = processor.create_sequences(
         monthly_selected,
@@ -108,7 +91,7 @@ def train_model():
     model.set_feature_columns(FEATURE_COLUMNS)
     model.set_scalers(scalers)
 
-    return {"message": "Model retrained and reloaded."}
+    return {"message": "Model retrained and reloaded with NCEI data."}
 
 
 @app.get("/predict")

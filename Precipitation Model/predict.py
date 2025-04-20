@@ -14,28 +14,19 @@ def predict_precip_for_month(target_month: str) -> float:
     model.load_model()
 
     ncei_path = os.path.join(config.DATA_DIR, "ncei_weather_data.csv")
-    df = pd.read_csv(ncei_path, parse_dates=["date"])
-    df["date"] = pd.to_datetime(df["date"])
-    monthly = (
-        df.set_index("date")
-          .resample("M")
-          .agg({ "precipitation": "sum" })   # only precipitation exists!
-          .reset_index()
-    )
+    df = pd.read_csv(config.NCEI_DATA_FILE, parse_dates=["date"]).sort_values("date")
 
-    monthly["month"] = monthly["date"].dt.month
-    monthly["season"] = monthly["month"].map(
-        lambda m: 1 if m in [12,1,2]
-                  else 2 if m in [3,4,5]
-                  else 3 if m in [6,7,8]
-                  else 4
-    )
+    # No resampling – file is already monthly
+    df["month"]  = df["date"].dt.month
+    df["season"] = df["month"].map(lambda m:
+                    1 if m in [12,1,2] else
+                    2 if m in [3,4,5] else
+                    3 if m in [6,7,8] else 4)
     for lag in (1, 2, 3):
-        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
+        df[f"precipitation_lag{lag}"] = df["precipitation"].shift(lag)
 
-    monthly = monthly.dropna().reset_index(drop=True)
+    monthly = df.dropna().reset_index(drop=True)
     monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
-
     proc = DataProcessor()
     X_all, y_all, scalers = proc.create_sequences(
         monthly_selected,

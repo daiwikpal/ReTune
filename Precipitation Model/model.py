@@ -247,9 +247,8 @@ def train_precipitation_model(data_path: str = None, sequence_length: int = None
     """
     Train a precipitation prediction model using NCEI-only monthly data.
     """
-    ### NOTE: Force the use of NCEI data path
     if data_path is None:
-        data_path = "data/ncei_weather_data.csv"  # <-- Make sure this matches your actual file
+        data_path = config.NCEI_DATA_FILE
 
     if sequence_length is None:
         sequence_length = config.SEQUENCE_LENGTH

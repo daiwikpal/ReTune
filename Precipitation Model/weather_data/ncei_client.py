@@ -34,10 +34,10 @@ class NCEIClient:
         self.base_url = "https://www.ncei.noaa.gov/cdo-web/api/v2/data"
         self.pathToEnv = os.path.join(os.path.dirname(__file__), '..', '.env')
         load_dotenv(dotenv_path=self.pathToEnv)
-        self.token = token or os.getenv("NOAA_API_TOKEN")  # Using the same token as NOAA
+        self.token = token or os.getenv("NOAA_TOKEN")
         if not self.token:
             logger.error("API token not found in constructor or environment")
-            raise ValueError("API token is required. Set it in the constructor or as NOAA_API_TOKEN environment variable")
+            raise ValueError("API token is required. Set it in the constructor or as NOAA_TOKEN environment variable")
         
         # Station ID for precipitation data
         self.station_id = "GHCND:USW00094728"  # Central Park, NY
