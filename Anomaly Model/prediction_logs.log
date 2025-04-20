@@ -1,0 +1,206 @@
+2025-04-20 18:47:45,363 - fastapi_app - INFO - Received prediction request for target month: 2025-02
+2025-04-20 18:47:45,363 - fastapi_app - INFO - Calculated date range: 2024-02-01 to 2025-03-04 for window size: 12
+2025-04-20 18:47:45,363 - fastapi_app - INFO - Initializing AlertDataProcessor...
+2025-04-20 18:47:45,364 - Clients.ncei_client - INFO - NCEI Client initialized (Station: GHCND:USW00094728)
+2025-04-20 18:47:45,369 - fastapi_app - INFO - Processing alerts for date range with WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:47:45,369 - fastapi_app - INFO - Calling VTEC API to fetch alerts from 2024-02-01 to 2025-03-04 for WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:47:46,733 - fastapi_app - INFO - VTEC API returned 806 alerts
+2025-04-20 18:47:46,779 - fastapi_app - INFO - Processed data has 351 total records
+2025-04-20 18:47:46,781 - fastapi_app - INFO - After filtering, window has 14 records
+2025-04-20 18:47:46,781 - fastapi_app - INFO - Taking last 12 months, now have 12 records
+2025-04-20 18:47:46,781 - fastapi_app - INFO - Input data summary statistics:
+2025-04-20 18:47:46,781 - fastapi_app - INFO -   COASTAL_FLOOD: min=0.0, max=24.0, mean=3.3333, non-zero=4
+2025-04-20 18:47:46,782 - fastapi_app - INFO -   COLD/WIND_CHILL: min=0.0, max=1.0, mean=0.0833, non-zero=1
+2025-04-20 18:47:46,782 - fastapi_app - INFO -   DENSE_FOG: min=0.0, max=34.0, mean=7.5833, non-zero=7
+2025-04-20 18:47:46,782 - fastapi_app - INFO -   DROUGHT: min=0.0, max=29.0, mean=7.4167, non-zero=6
+2025-04-20 18:47:46,783 - fastapi_app - INFO -   EXCESSIVE_HEAT: min=0.0, max=76.0, mean=9.5833, non-zero=3
+2025-04-20 18:47:46,783 - fastapi_app - INFO -   ASTRONOMICAL_LOW_TIDE: min=0.0, max=1.0, mean=0.1667, non-zero=2
+2025-04-20 18:47:46,783 - fastapi_app - INFO -   FLASH_FLOOD: min=0, max=331, mean=44.6667, non-zero=6
+2025-04-20 18:47:46,783 - fastapi_app - INFO -   FLOOD: min=0, max=32, mean=7.0000, non-zero=9
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   FROST/FREEZE: min=0.0, max=5.0, mean=0.4167, non-zero=1
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   FUNNEL_CLOUD: min=0, max=10, mean=1.1667, non-zero=4
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   HAIL: min=0, max=101, mean=23.5000, non-zero=7
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   HEAT: min=0, max=80, mean=12.0000, non-zero=3
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   HEAVY_RAIN: min=0, max=2, mean=0.2500, non-zero=2
+2025-04-20 18:47:46,784 - fastapi_app - INFO -   HEAVY_SNOW: min=0, max=26, mean=2.5833, non-zero=2
+2025-04-20 18:47:46,785 - fastapi_app - INFO -   HIGH_WIND: min=0, max=16, mean=3.1667, non-zero=3
+2025-04-20 18:47:46,786 - fastapi_app - INFO -   LAKE-EFFECT_SNOW: min=0.0, max=47.0, mean=5.0000, non-zero=2
+2025-04-20 18:47:46,786 - fastapi_app - INFO -   LAKESHORE_FLOOD: min=0.0, max=1.0, mean=0.0833, non-zero=1
+2025-04-20 18:47:46,787 - fastapi_app - INFO -   LIGHTNING: min=0, max=5, mean=1.5833, non-zero=6
+2025-04-20 18:47:46,787 - fastapi_app - INFO -   MARINE_THUNDERSTORM_WIND: min=0, max=7, mean=0.5833, non-zero=1
+2025-04-20 18:47:46,787 - fastapi_app - INFO -   RIP_CURRENT: min=0.0, max=1.0, mean=0.2500, non-zero=3
+2025-04-20 18:47:46,788 - fastapi_app - INFO -   STRONG_WIND: min=0, max=17, mean=4.0000, non-zero=5
+2025-04-20 18:47:46,788 - fastapi_app - INFO -   THUNDERSTORM_WIND: min=0, max=889, mean=205.3333, non-zero=10
+2025-04-20 18:47:46,788 - fastapi_app - INFO -   TORNADO: min=0, max=24, mean=5.9167, non-zero=7
+2025-04-20 18:47:46,789 - fastapi_app - INFO -   WILDFIRE: min=0.0, max=2.0, mean=0.1667, non-zero=1
+2025-04-20 18:47:46,789 - fastapi_app - INFO -   WINTER_STORM: min=0, max=21, mean=4.0000, non-zero=3
+2025-04-20 18:47:46,789 - fastapi_app - INFO -   WINTER_WEATHER: min=0, max=111, mean=13.7500, non-zero=3
+2025-04-20 18:47:46,789 - fastapi_app - INFO -   precip_12m_mean: min=3.527377873563218, max=5.449166666666667, mean=4.5191, non-zero=12
+2025-04-20 18:47:46,789 - fastapi_app - INFO -   precip_12m_std: min=1.8785770223287759, max=3.67804409072721, mean=2.8710, non-zero=12
+2025-04-20 18:47:46,790 - fastapi_app - INFO -   precip_12m_z: min=-1.523091470434109, max=1.0607082396688907, mean=-0.3141, non-zero=12
+2025-04-20 18:47:46,790 - fastapi_app - INFO -   season_sin: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 18:47:46,790 - fastapi_app - INFO -   season_cos: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 18:47:46,790 - fastapi_app - INFO - Input data shape before scaling: (12, 54)
+2025-04-20 18:47:46,790 - fastapi_app - INFO - Input data shape after scaling: (12, 54)
+2025-04-20 18:47:46,794 - fastapi_app - INFO - Input tensor shape: torch.Size([1, 12, 54])
+2025-04-20 18:47:46,795 - fastapi_app - INFO - Model prediction for 2025-02: 3.715574264526367
+2025-04-20 18:50:22,497 - fastapi_app - INFO - Received prediction request for target month: 1980-02
+2025-04-20 18:50:22,500 - fastapi_app - INFO - Calculated date range: 1979-02-01 to 1980-03-03 for window size: 12
+2025-04-20 18:50:22,500 - fastapi_app - INFO - Initializing AlertDataProcessor...
+2025-04-20 18:50:22,502 - Clients.ncei_client - INFO - NCEI Client initialized (Station: GHCND:USW00094728)
+2025-04-20 18:50:22,510 - fastapi_app - INFO - Processing alerts for date range with WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:50:22,510 - fastapi_app - INFO - Calling VTEC API to fetch alerts from 1979-02-01 to 1980-03-03 for WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:50:22,841 - fastapi_app - INFO - VTEC API returned 0 alerts
+2025-04-20 18:50:22,842 - fastapi_app - ERROR - Error in predict_simple: 'utc_issue'
+Traceback (most recent call last):
+  File "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/fastapi_app.py", line 361, in predict_simple
+    alerts_data = processor.process_and_merge_alerts(
+  File "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/alert_data_processor.py", line 433, in process_and_merge_alerts
+    processed_df = self.process_alerts(alerts_data)
+  File "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/alert_data_processor.py", line 143, in process_alerts
+    alerts_df['month'] = pd.to_datetime(alerts_df['utc_issue']).dt.strftime('%Y-%m')
+  File "/Users/daiwikpal/.pyenv/versions/3.10.3/lib/python3.10/site-packages/pandas/core/frame.py", line 3761, in __getitem__
+    indexer = self.columns.get_loc(key)
+  File "/Users/daiwikpal/.pyenv/versions/3.10.3/lib/python3.10/site-packages/pandas/core/indexes/range.py", line 349, in get_loc
+    raise KeyError(key)
+KeyError: 'utc_issue'
+2025-04-20 18:50:49,544 - fastapi_app - INFO - Received prediction request for target month: 2004-02
+2025-04-20 18:50:49,545 - fastapi_app - INFO - Calculated date range: 2003-02-01 to 2004-03-03 for window size: 12
+2025-04-20 18:50:49,545 - fastapi_app - INFO - Initializing AlertDataProcessor...
+2025-04-20 18:50:49,547 - Clients.ncei_client - INFO - NCEI Client initialized (Station: GHCND:USW00094728)
+2025-04-20 18:50:49,554 - fastapi_app - INFO - Processing alerts for date range with WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:50:49,554 - fastapi_app - INFO - Calling VTEC API to fetch alerts from 2003-02-01 to 2004-03-03 for WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 18:50:49,891 - fastapi_app - INFO - VTEC API returned 130 alerts
+2025-04-20 18:50:49,939 - fastapi_app - INFO - Processed data has 351 total records
+2025-04-20 18:50:49,942 - fastapi_app - INFO - After filtering, window has 14 records
+2025-04-20 18:50:49,942 - fastapi_app - INFO - Taking last 12 months, now have 12 records
+2025-04-20 18:50:49,943 - fastapi_app - INFO - Input data summary statistics:
+2025-04-20 18:50:49,943 - fastapi_app - INFO -   BLIZZARD: min=0.0, max=6.0, mean=0.5000, non-zero=1
+2025-04-20 18:50:49,944 - fastapi_app - INFO -   COLD/WIND_CHILL: min=0.0, max=193.0, mean=16.0833, non-zero=1
+2025-04-20 18:50:49,944 - fastapi_app - INFO -   FLASH_FLOOD: min=0, max=186, mean=35.1667, non-zero=10
+2025-04-20 18:50:49,945 - fastapi_app - INFO -   FLOOD: min=0, max=72, mean=21.4167, non-zero=11
+2025-04-20 18:50:49,945 - fastapi_app - INFO -   FROST/FREEZE: min=0.0, max=29.0, mean=3.2500, non-zero=3
+2025-04-20 18:50:49,945 - fastapi_app - INFO -   FUNNEL_CLOUD: min=0, max=4, mean=0.9167, non-zero=6
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HAIL: min=0, max=47, mean=10.5000, non-zero=6
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HEAT: min=0, max=21, mean=3.0833, non-zero=2
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HEAVY_RAIN: min=0, max=23, mean=7.5000, non-zero=8
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HEAVY_SNOW: min=0, max=170, mean=41.7500, non-zero=6
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HIGH_SURF: min=0.0, max=4.0, mean=0.7500, non-zero=3
+2025-04-20 18:50:49,946 - fastapi_app - INFO -   HIGH_WIND: min=0, max=172, mean=26.5833, non-zero=7
+2025-04-20 18:50:49,947 - fastapi_app - INFO -   ICE_STORM: min=0.0, max=52.0, mean=7.9167, non-zero=4
+2025-04-20 18:50:49,947 - fastapi_app - INFO -   LIGHTNING: min=0, max=28, mean=5.0000, non-zero=7
+2025-04-20 18:50:49,948 - fastapi_app - INFO -   RIP_CURRENT: min=0.0, max=1.0, mean=0.0833, non-zero=1
+2025-04-20 18:50:49,948 - fastapi_app - INFO -   STORM_SURGE/TIDE: min=0.0, max=30.0, mean=7.5833, non-zero=7
+2025-04-20 18:50:49,948 - fastapi_app - INFO -   STRONG_WIND: min=0, max=46, mean=11.2500, non-zero=8
+2025-04-20 18:50:49,948 - fastapi_app - INFO -   THUNDERSTORM_WIND: min=0, max=295, mean=55.1667, non-zero=10
+2025-04-20 18:50:49,948 - fastapi_app - INFO -   TORNADO: min=0, max=19, mean=2.8333, non-zero=6
+2025-04-20 18:50:49,949 - fastapi_app - INFO -   TROPICAL_STORM: min=0.0, max=42.0, mean=3.5000, non-zero=1
+2025-04-20 18:50:49,949 - fastapi_app - INFO -   WINTER_STORM: min=0, max=117, mean=23.8333, non-zero=6
+2025-04-20 18:50:49,950 - fastapi_app - INFO -   WINTER_WEATHER: min=0, max=81, mean=21.0000, non-zero=6
+2025-04-20 18:50:49,950 - fastapi_app - INFO -   precip_12m_mean: min=4.095833333333332, max=5.02, mean=4.6889, non-zero=12
+2025-04-20 18:50:49,950 - fastapi_app - INFO -   precip_12m_std: min=1.5497859089681922, max=2.354528840470226, mean=2.0221, non-zero=12
+2025-04-20 18:50:49,950 - fastapi_app - INFO -   precip_12m_z: min=-1.3319050475869312, max=2.3854737177672263, mean=-0.1044, non-zero=12
+2025-04-20 18:50:49,950 - fastapi_app - INFO -   season_sin: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 18:50:49,951 - fastapi_app - INFO -   season_cos: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 18:50:49,951 - fastapi_app - INFO - Input data shape before scaling: (12, 54)
+2025-04-20 18:50:49,951 - fastapi_app - INFO - Input data shape after scaling: (12, 54)
+2025-04-20 18:50:49,952 - fastapi_app - INFO - Input tensor shape: torch.Size([1, 12, 54])
+2025-04-20 18:50:49,953 - fastapi_app - INFO - Model prediction for 2004-02: 3.750559091567993
+2025-04-20 19:46:38,849 - fastapi_app - INFO - Received prediction request for target month: 2023-05
+2025-04-20 19:46:38,850 - fastapi_app - INFO - Calculated date range: 2022-05-01 to 2023-06-01 for window size: 12
+2025-04-20 19:46:38,850 - fastapi_app - INFO - Initializing AlertDataProcessor...
+2025-04-20 19:46:38,851 - Clients.ncei_client - INFO - NCEI Client initialized (Station: GHCND:USW00094728)
+2025-04-20 19:46:38,865 - fastapi_app - INFO - Processing alerts for date range with WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 19:46:38,865 - fastapi_app - INFO - Calling VTEC API to fetch alerts from 2022-05-01 to 2023-06-01 for WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 19:46:39,662 - fastapi_app - INFO - VTEC API returned 356 alerts
+2025-04-20 19:46:39,799 - fastapi_app - INFO - Processed data has 351 total records
+2025-04-20 19:46:39,802 - fastapi_app - INFO - After filtering, window has 14 records
+2025-04-20 19:46:39,803 - fastapi_app - INFO - Taking last 12 months, now have 12 records
+2025-04-20 19:46:39,803 - fastapi_app - INFO - Input data summary statistics:
+2025-04-20 19:46:39,804 - fastapi_app - INFO -   BLIZZARD: min=0.0, max=10.0, mean=0.8333, non-zero=1
+2025-04-20 19:46:39,804 - fastapi_app - INFO -   COASTAL_FLOOD: min=0.0, max=21.0, mean=3.0833, non-zero=3
+2025-04-20 19:46:39,804 - fastapi_app - INFO -   COLD/WIND_CHILL: min=0.0, max=58.0, mean=5.4167, non-zero=2
+2025-04-20 19:46:39,805 - fastapi_app - INFO -   DEBRIS_FLOW: min=0.0, max=2.0, mean=0.1667, non-zero=1
+2025-04-20 19:46:39,805 - fastapi_app - INFO -   DENSE_FOG: min=0.0, max=39.0, mean=13.4167, non-zero=7
+2025-04-20 19:46:39,805 - fastapi_app - INFO -   DROUGHT: min=0.0, max=5.0, mean=1.3333, non-zero=4
+2025-04-20 19:46:39,806 - fastapi_app - INFO -   EXCESSIVE_HEAT: min=0.0, max=17.0, mean=1.4167, non-zero=1
+2025-04-20 19:46:39,806 - fastapi_app - INFO -   EXTREME_COLD/WIND_CHILL: min=0.0, max=38.0, mean=5.1667, non-zero=2
+2025-04-20 19:46:39,807 - fastapi_app - INFO -   FLASH_FLOOD: min=0, max=35, mean=11.5000, non-zero=7
+2025-04-20 19:46:39,807 - fastapi_app - INFO -   FLOOD: min=0, max=9, mean=3.7500, non-zero=9
+2025-04-20 19:46:39,807 - fastapi_app - INFO -   FREEZING_FOG: min=0.0, max=3.0, mean=0.2500, non-zero=1
+2025-04-20 19:46:39,807 - fastapi_app - INFO -   FROST/FREEZE: min=0.0, max=69.0, mean=6.0000, non-zero=3
+2025-04-20 19:46:39,808 - fastapi_app - INFO -   FUNNEL_CLOUD: min=0, max=3, mean=0.4167, non-zero=3
+2025-04-20 19:46:39,808 - fastapi_app - INFO -   HAIL: min=0, max=72, mean=17.5000, non-zero=8
+2025-04-20 19:46:39,808 - fastapi_app - INFO -   HEAT: min=0, max=43, mean=6.5833, non-zero=2
+2025-04-20 19:46:39,808 - fastapi_app - INFO -   HEAVY_RAIN: min=0, max=31, mean=3.7500, non-zero=4
+2025-04-20 19:46:39,809 - fastapi_app - INFO -   HEAVY_SNOW: min=0, max=20, mean=3.5000, non-zero=3
+2025-04-20 19:46:39,809 - fastapi_app - INFO -   HIGH_WIND: min=0, max=34, mean=7.0000, non-zero=5
+2025-04-20 19:46:39,809 - fastapi_app - INFO -   ICE_STORM: min=0.0, max=6.0, mean=0.7500, non-zero=2
+2025-04-20 19:46:39,810 - fastapi_app - INFO -   LAKE-EFFECT_SNOW: min=0.0, max=29.0, mean=4.3333, non-zero=4
+2025-04-20 19:46:39,810 - fastapi_app - INFO -   LAKESHORE_FLOOD: min=0.0, max=4.0, mean=0.5833, non-zero=2
+2025-04-20 19:46:39,810 - fastapi_app - INFO -   LIGHTNING: min=0, max=10, mean=2.0833, non-zero=5
+2025-04-20 19:46:39,811 - fastapi_app - INFO -   RIP_CURRENT: min=0.0, max=2.0, mean=0.4167, non-zero=4
+2025-04-20 19:46:39,812 - fastapi_app - INFO -   STRONG_WIND: min=0, max=41, mean=8.5833, non-zero=6
+2025-04-20 19:46:39,812 - fastapi_app - INFO -   THUNDERSTORM_WIND: min=0, max=534, mean=111.2500, non-zero=10
+2025-04-20 19:46:39,812 - fastapi_app - INFO -   TORNADO: min=0, max=15, mean=2.5000, non-zero=6
+2025-04-20 19:46:39,813 - fastapi_app - INFO -   WILDFIRE: min=0.0, max=2.0, mean=0.4167, non-zero=4
+2025-04-20 19:46:39,813 - fastapi_app - INFO -   WINTER_STORM: min=0, max=76, mean=14.4167, non-zero=5
+2025-04-20 19:46:39,814 - fastapi_app - INFO -   WINTER_WEATHER: min=0, max=140, mean=37.2500, non-zero=5
+2025-04-20 19:46:39,814 - fastapi_app - INFO -   precip_12m_mean: min=3.140833333333333, max=4.3675, mean=3.6338, non-zero=12
+2025-04-20 19:46:39,814 - fastapi_app - INFO -   precip_12m_std: min=1.2000909056476394, max=2.9996549043939287, mean=1.6933, non-zero=12
+2025-04-20 19:46:39,814 - fastapi_app - INFO -   precip_12m_z: min=-1.5784864157743133, max=2.0819506149688665, mean=0.1257, non-zero=12
+2025-04-20 19:46:39,815 - fastapi_app - INFO -   season_sin: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 19:46:39,815 - fastapi_app - INFO -   season_cos: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 19:46:39,815 - fastapi_app - INFO - Input data shape before scaling: (12, 54)
+2025-04-20 19:46:39,816 - fastapi_app - INFO - Input data shape after scaling: (12, 54)
+2025-04-20 19:46:39,828 - fastapi_app - INFO - Input tensor shape: torch.Size([1, 12, 54])
+2025-04-20 19:46:39,857 - fastapi_app - INFO - Model prediction for 2023-05: 3.5210416316986084
+2025-04-20 19:46:39,863 - fastapi_app - INFO - Received prediction request for target month: 2023-05
+2025-04-20 19:46:39,863 - fastapi_app - INFO - Calculated date range: 2022-05-01 to 2023-06-01 for window size: 12
+2025-04-20 19:46:39,863 - fastapi_app - INFO - Initializing AlertDataProcessor...
+2025-04-20 19:46:39,864 - Clients.ncei_client - INFO - NCEI Client initialized (Station: GHCND:USW00094728)
+2025-04-20 19:46:39,868 - fastapi_app - INFO - Processing alerts for date range with WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 19:46:39,868 - fastapi_app - INFO - Calling VTEC API to fetch alerts from 2022-05-01 to 2023-06-01 for WFOs: ['OKX', 'PHI', 'CTP']
+2025-04-20 19:46:40,799 - fastapi_app - INFO - VTEC API returned 356 alerts
+2025-04-20 19:46:40,832 - fastapi_app - INFO - Processed data has 351 total records
+2025-04-20 19:46:40,833 - fastapi_app - INFO - After filtering, window has 14 records
+2025-04-20 19:46:40,834 - fastapi_app - INFO - Taking last 12 months, now have 12 records
+2025-04-20 19:46:40,834 - fastapi_app - INFO - Input data summary statistics:
+2025-04-20 19:46:40,834 - fastapi_app - INFO -   BLIZZARD: min=0.0, max=10.0, mean=0.8333, non-zero=1
+2025-04-20 19:46:40,835 - fastapi_app - INFO -   COASTAL_FLOOD: min=0.0, max=21.0, mean=3.0833, non-zero=3
+2025-04-20 19:46:40,835 - fastapi_app - INFO -   COLD/WIND_CHILL: min=0.0, max=58.0, mean=5.4167, non-zero=2
+2025-04-20 19:46:40,835 - fastapi_app - INFO -   DEBRIS_FLOW: min=0.0, max=2.0, mean=0.1667, non-zero=1
+2025-04-20 19:46:40,836 - fastapi_app - INFO -   DENSE_FOG: min=0.0, max=39.0, mean=13.4167, non-zero=7
+2025-04-20 19:46:40,836 - fastapi_app - INFO -   DROUGHT: min=0.0, max=5.0, mean=1.3333, non-zero=4
+2025-04-20 19:46:40,836 - fastapi_app - INFO -   EXCESSIVE_HEAT: min=0.0, max=17.0, mean=1.4167, non-zero=1
+2025-04-20 19:46:40,837 - fastapi_app - INFO -   EXTREME_COLD/WIND_CHILL: min=0.0, max=38.0, mean=5.1667, non-zero=2
+2025-04-20 19:46:40,837 - fastapi_app - INFO -   FLASH_FLOOD: min=0, max=35, mean=11.5000, non-zero=7
+2025-04-20 19:46:40,838 - fastapi_app - INFO -   FLOOD: min=0, max=9, mean=3.7500, non-zero=9
+2025-04-20 19:46:40,838 - fastapi_app - INFO -   FREEZING_FOG: min=0.0, max=3.0, mean=0.2500, non-zero=1
+2025-04-20 19:46:40,838 - fastapi_app - INFO -   FROST/FREEZE: min=0.0, max=69.0, mean=6.0000, non-zero=3
+2025-04-20 19:46:40,838 - fastapi_app - INFO -   FUNNEL_CLOUD: min=0, max=3, mean=0.4167, non-zero=3
+2025-04-20 19:46:40,839 - fastapi_app - INFO -   HAIL: min=0, max=72, mean=17.5000, non-zero=8
+2025-04-20 19:46:40,839 - fastapi_app - INFO -   HEAT: min=0, max=43, mean=6.5833, non-zero=2
+2025-04-20 19:46:40,839 - fastapi_app - INFO -   HEAVY_RAIN: min=0, max=31, mean=3.7500, non-zero=4
+2025-04-20 19:46:40,839 - fastapi_app - INFO -   HEAVY_SNOW: min=0, max=20, mean=3.5000, non-zero=3
+2025-04-20 19:46:40,840 - fastapi_app - INFO -   HIGH_WIND: min=0, max=34, mean=7.0000, non-zero=5
+2025-04-20 19:46:40,840 - fastapi_app - INFO -   ICE_STORM: min=0.0, max=6.0, mean=0.7500, non-zero=2
+2025-04-20 19:46:40,840 - fastapi_app - INFO -   LAKE-EFFECT_SNOW: min=0.0, max=29.0, mean=4.3333, non-zero=4
+2025-04-20 19:46:40,841 - fastapi_app - INFO -   LAKESHORE_FLOOD: min=0.0, max=4.0, mean=0.5833, non-zero=2
+2025-04-20 19:46:40,841 - fastapi_app - INFO -   LIGHTNING: min=0, max=10, mean=2.0833, non-zero=5
+2025-04-20 19:46:40,842 - fastapi_app - INFO -   RIP_CURRENT: min=0.0, max=2.0, mean=0.4167, non-zero=4
+2025-04-20 19:46:40,842 - fastapi_app - INFO -   STRONG_WIND: min=0, max=41, mean=8.5833, non-zero=6
+2025-04-20 19:46:40,843 - fastapi_app - INFO -   THUNDERSTORM_WIND: min=0, max=534, mean=111.2500, non-zero=10
+2025-04-20 19:46:40,843 - fastapi_app - INFO -   TORNADO: min=0, max=15, mean=2.5000, non-zero=6
+2025-04-20 19:46:40,844 - fastapi_app - INFO -   WILDFIRE: min=0.0, max=2.0, mean=0.4167, non-zero=4
+2025-04-20 19:46:40,844 - fastapi_app - INFO -   WINTER_STORM: min=0, max=76, mean=14.4167, non-zero=5
+2025-04-20 19:46:40,844 - fastapi_app - INFO -   WINTER_WEATHER: min=0, max=140, mean=37.2500, non-zero=5
+2025-04-20 19:46:40,845 - fastapi_app - INFO -   precip_12m_mean: min=3.140833333333333, max=4.3675, mean=3.6338, non-zero=12
+2025-04-20 19:46:40,845 - fastapi_app - INFO -   precip_12m_std: min=1.2000909056476394, max=2.9996549043939287, mean=1.6933, non-zero=12
+2025-04-20 19:46:40,845 - fastapi_app - INFO -   precip_12m_z: min=-1.5784864157743133, max=2.0819506149688665, mean=0.1257, non-zero=12
+2025-04-20 19:46:40,845 - fastapi_app - INFO -   season_sin: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 19:46:40,846 - fastapi_app - INFO -   season_cos: min=-1.0, max=1.0, mean=-0.0000, non-zero=12
+2025-04-20 19:46:40,846 - fastapi_app - INFO - Input data shape before scaling: (12, 54)
+2025-04-20 19:46:40,846 - fastapi_app - INFO - Input data shape after scaling: (12, 54)
+2025-04-20 19:46:40,846 - fastapi_app - INFO - Input tensor shape: torch.Size([1, 12, 54])
+2025-04-20 19:46:40,847 - fastapi_app - INFO - Model prediction for 2023-05: 3.5210416316986084
