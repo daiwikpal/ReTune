@@ -177,32 +177,21 @@ class DataProcessor:
         
         return np.array(X), np.array(y), scalers
     
-    def save_data(self, data: pd.DataFrame, filename: str = None) -> str:
+    def save_data(self, data: pd.DataFrame, filename: str | None = None) -> str:
         """
-        Save processed data to CSV.
-        
-        Args:
-            data: Data to save
-            filename: Output filename
-            
-        Returns:
-            Path to the saved file
+        Save a DataFrame to <project_root>/data/<filename>
         """
         if filename is None:
-            filename = config.OUTPUT_FILE
+            filename = config.OUTPUT_FILE               # already absolute
+        else:
+            filename = os.path.join(
+                config.DATA_DIR, os.path.basename(filename)
+            )
 
-        # build absolute path to <project_root>/filename
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        absolute_path = os.path.join(project_root, filename)
-
-        # ensure parent dir exists
-        os.makedirs(os.path.dirname(absolute_path), exist_ok=True)
-
-        # write CSV
-        data.to_csv(absolute_path, index=False)
-        logger.info(f"Data saved to {absolute_path}")
-
-        return absolute_path
+        os.makedirs(config.DATA_DIR, exist_ok=True)
+        data.to_csv(filename, index=False)
+        logger.info(f"Data saved to {filename}")
+        return filename
     
     def _combine_historical_data(self, 
                                 noaa_data: pd.DataFrame, 
@@ -420,25 +409,13 @@ class DataProcessor:
         df["date"] = pd.to_datetime(df["date"])
 
         # Save it to file
-        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        absolute_save = os.path.join(project_root, save_path)
-        os.makedirs(os.path.dirname(absolute_save), exist_ok=True)
-        df.to_csv(absolute_save, index=False)
-        logger.info(f"NCEI data saved to {absolute_save}")
-
+        save_path = os.path.join(
+            config.DATA_DIR, os.path.basename(save_path)
+        )
+        os.makedirs(config.DATA_DIR, exist_ok=True)
+        df.to_csv(save_path, index=False)
+        logger.info(f"NCEI data saved to {save_path}")
         return df
-
-    def test_save_csv(self, save_path: str = "data/test_output.csv") -> None:
-        """
-        Test saving a dummy DataFrame to verify directory path works.
-        """
-        dummy_df = pd.DataFrame({
-            "date": ["2024-01-01", "2024-02-01"],
-            "precipitation": [1.23, 4.56]
-        })
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        dummy_df.to_csv(save_path, index=False)
-        logger.info(f"✅ Dummy data saved to {save_path}")
 
 
 
