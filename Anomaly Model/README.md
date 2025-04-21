@@ -4,7 +4,7 @@ A FastAPI service for predicting precipitation anomalies based on weather data u
 
 ## Overview
 
-This API serves a pre-trained LSTM model that takes a 12-month window of weather data and predicts whether the next month's precipitation will be anomalous (over 1 inch).
+This API serves a pre-trained LSTM model that takes a 12-month window of weather data and predicts whether the next month's precipitation will be anomalous (over 1 inch). The service also supports retraining the model with new data.
 
 ## Installation
 
@@ -17,7 +17,7 @@ pip install fastapi uvicorn pandas numpy torch scikit-learn
 2. Start the API server:
 
 ```bash
-cd "Anomaly Model/Model_Serving_Retraining_Service"
+cd "Anomaly Model"
 python fastapi_app.py
 ```
 
@@ -38,7 +38,30 @@ Returns basic information about the model.
   "window_size": 12,
   "validation_mae": 1.5575,
   "test_mae": 1.6243,
-  "input_features": 52
+  "input_features": 52,
+  "current_model": "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_stride1_valMAE1.5575.pkl"
+}
+```
+
+### GET /model_status
+
+Get information about the currently loaded model and available models.
+
+**Response:**
+```json
+{
+  "current_model": "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_retrained_20230523_152302.pkl",
+  "last_modified": "2023-05-23T15:23:02",
+  "available_models": [
+    "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_stride1_valMAE1.5575.pkl",
+    "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_retrained_20230523_152302.pkl"
+  ],
+  "model_info": {
+    "type": "lstm",
+    "stride": 1,
+    "window_size": 12,
+    "test_mae": 1.624
+  }
 }
 ```
 
@@ -119,18 +142,57 @@ The API requires 12 months of data, each containing the features shown above. Th
 ```json
 {
   "prediction": 1.25,
-  "is_anomaly": true,
-  "threshold": 1.0
+  "model_path": "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_retrained_20230523_152302.pkl",
+  "model_timestamp": "2023-05-23 15:23:02",
+  "model_metrics": {
+    "test_mae": 1.624,
+    "val_mae": 1.5575,
+    "type": "lstm",
+    "window_size": 12
+  }
 }
 ```
 
 - `prediction`: The predicted precipitation value for the next month (in inches)
-- `is_anomaly`: Boolean indicating if the prediction exceeds the anomaly threshold
-- `threshold`: The threshold value that defines an anomaly (1.0 inch)
+- `model_path`: Path to the model file used for prediction
+- `model_timestamp`: Timestamp of when the model was last modified
+- `model_metrics`: Additional metrics about the model's performance
+
+### POST /retrain
+
+Retrains the model with new weather data for a specified time period.
+
+**Request Body:**
+
+```json
+{
+  "begints": "2023-01-01",
+  "endts": "2023-04-01"
+}
+```
+
+- `begints`: Start date in YYYY-MM-DD format for fetching new weather data
+- `endts`: End date in YYYY-MM-DD format for fetching new weather data
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "model_path": "/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_retrained_20230523_152302.pkl",
+  "test_mae": 1.624,
+  "timestamp": "20230523_152302"
+}
+```
+
+- `success`: Boolean indicating if retraining was successful
+- `model_path`: Path to the newly trained model file
+- `test_mae`: Mean Absolute Error on the test dataset
+- `timestamp`: Timestamp when the model was retrained
 
 ## Example Usage
 
-### Python Example
+### Python Example - Prediction
 
 ```python
 import requests
@@ -149,7 +211,37 @@ response = requests.post(
 # Print result
 result = response.json()
 print(f"Predicted precipitation: {result['prediction']} inches")
-print(f"Is anomaly: {result['is_anomaly']}")
+print(f"Model used: {result['model_path']}")
+print(f"Model timestamp: {result['model_timestamp']}")
+```
+
+### Python Example - Retraining
+
+```python
+import requests
+
+# Retrain the model with new data from January to April 2023
+response = requests.post(
+    "http://localhost:8000/retrain",
+    json={
+        "begints": "2023-01-01",
+        "endts": "2023-04-01"
+    }
+)
+
+# Print result
+result = response.json()
+if result["success"]:
+    print(f"Model successfully retrained")
+    print(f"New model saved to: {result['model_path']}")
+    print(f"Test MAE: {result['test_mae']}")
+else:
+    print("Retraining failed")
+
+# Check model status
+model_status = requests.get("http://localhost:8000/model_status").json()
+print(f"Current model: {model_status['current_model']}")
+print(f"Available models: {len(model_status['available_models'])}")
 ```
 
 ## Model Information
@@ -160,7 +252,10 @@ The API serves an LSTM model trained on historical weather data for precipitatio
 - Window size: 12 months
 - Input features: Weather events, statistical metrics, and seasonal indicators
 - Target: Next month's precipitation
-- Anomaly threshold: 1.0 inch of precipitation
+
+## Automated Model Retraining
+
+The system automatically uses the most recently trained model for predictions. After retraining, the API will start using the new model for all subsequent prediction requests.
 
 ## Data Format
 
