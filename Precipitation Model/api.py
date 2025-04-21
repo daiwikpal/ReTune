@@ -1,130 +1,83 @@
-import math
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
-from typing import Optional
-import numpy as np
+from pydantic import BaseModel, conlist
+from datetime import date
 import pandas as pd
-from model import PrecipitationModel, DataProcessor, train_precipitation_model
+
 import config
-from predict import predict_precip_for_month
-
-DATA_FILE = config.NCEI_DATA_FILE
-
-FEATURE_COLUMNS = [
-    "precipitation",
-    "month",
-    "season",
-    "precipitation_lag1",
-    "precipitation_lag2",
-    "precipitation_lag3",
-]
-
+from model import PrecipitationModel, train_precipitation_model, FEATURE_COLUMNS
 
 app = FastAPI()
 
-processor: DataProcessor
-model: PrecipitationModel
-data: pd.DataFrame
-X, y, scalers = None, None, None
+# single global model instance
+model = PrecipitationModel(sequence_length=12)
 
 @app.on_event("startup")
-@app.on_event("startup")
-def load_resources():
-    global processor, model, data, X, y, scalers
-
-    processor = DataProcessor()
-    model = PrecipitationModel(sequence_length=12)
-
-    # Try to load model; okay if not found
+def startup():
+    # try loading an existing model+scalers at startup
     try:
-        model.load_model()
-    except Exception as e:
-        print(f"⚠️ Warning: Model not loaded at startup — {e}")
+        model.load()
+    except Exception:
+        pass
 
-    # Try to load the data file; okay if not found
-    try:
-        raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
+class Record(BaseModel):
+    date: date
+    precipitation: float
+    temperature_max: float
+    temperature_min: float
+    humidity: float
+    wind_speed: float
+    pressure: float
+    temperature_range: float
+    month: int
+    season: int
+    month_cos: float
+    month_sin: float
+    precipitation_lag1: float
+    precipitation_lag2: float
+    precipitation_lag3: float
+    precipitation_lag7: float
+    precipitation_rolling_mean_7d: float
+    precipitation_rolling_max_7d: float
 
-        raw["month"]  = raw["date"].dt.month
-        raw["season"] = raw["month"].map(lambda m:
-                            1 if m in [12, 1, 2] else
-                            2 if m in [3, 4, 5] else
-                            3 if m in [6, 7, 8] else 4)
+class ForecastInput(BaseModel):
+    # exactly 12 records required
+    recent: conlist(Record, min_items=12, max_items=12)
 
-        for lag in (1, 2, 3):
-            raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
-
-        monthly = raw.dropna().reset_index(drop=True)
-        monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
-
-        X, y, scalers = processor.create_sequences(
-            monthly_selected,
-            sequence_length=12,
-            target_column="precipitation"
-        )
-
-        model.set_feature_columns(FEATURE_COLUMNS)
-        model.set_scalers(scalers)
-        data = raw
-
-    except FileNotFoundError:
-        print(f"NCEI data file not found at {DATA_FILE}. Model will still work once data is trained.")
-        data, X, y, scalers = None, None, None, None
-
-@app.get("/")
-def redirect_to_docs():
+@app.get("/", include_in_schema=False)
+def root():
     return RedirectResponse(url="/docs")
 
-@app.post("/train-model")
-def train_model():
-    global model, X, y, scalers, data
-
-    model = train_precipitation_model(config.NCEI_DATA_FILE)
-
-    # Reload the same monthly file for fresh scalers
-    raw = pd.read_csv(DATA_FILE, parse_dates=["date"]).sort_values("date")
-
-    raw["month"]  = raw["date"].dt.month
-    raw["season"] = raw["month"].map(lambda m:
-                    1 if m in [12,1,2] else
-                    2 if m in [3,4,5] else
-                    3 if m in [6,7,8] else 4)
-    for lag in (1, 2, 3):
-        raw[f"precipitation_lag{lag}"] = raw["precipitation"].shift(lag)
-
-    raw = raw.dropna().reset_index(drop=True)
-    monthly_selected = raw[["date"] + FEATURE_COLUMNS]
-
-    X, y, scalers = processor.create_sequences(
-        monthly_selected,
-        sequence_length=12,
-        target_column="precipitation"
-    )
-    model.set_feature_columns(FEATURE_COLUMNS)
-    model.set_scalers(scalers)
-
-    return {"message": "Model retrained and reloaded with NCEI data."}
-
-
-@app.get("/predict")
-def predict(month: Optional[str] = None):
-    if not month:
-        return {"error": "Please provide a month like '2025-06'"}
-
-    if X is None or scalers is None:
-        return {"error": "Model not trained yet. Please train the model first."}
-
+@app.post("/train-model", summary="Train or retrain the LSTM on the NCEI data")
+def train_model_endpoint():
+    # retrain from scratch
+    train_precipitation_model(config.NCEI_DATA_FILE)
+    # reload into our global model
     try:
-        rain = predict_precip_for_month(month)
-        if not math.isfinite(rain):
-            return {"error": "Prediction returned NaN/Inf — check your training data."}
+        model.load()
+    except Exception:
+        pass
+    return {"message": "Model trained and loaded."}
+
+@app.post("/forecast", summary="Forecast next month from 12 months of input data")
+def forecast(input: ForecastInput):
+    # build a DataFrame from the incoming records
+    recent_df = pd.DataFrame([r.dict() for r in input.recent])
+    try:
+        # pick out exactly the columns your model was trained on
+        df_in = recent_df[["date"] + FEATURE_COLUMNS]
+        pred = model.forecast_next(df_in)
     except Exception as e:
-        return {"error": str(e)}
+        # return any errors as HTTP 400
+        raise HTTPException(status_code=400, detail=str(e))
 
     return {
-        "month": month,
-        "predicted_monthly_precipitation_inches": float(rain)
+        "predicted_monthly_precipitation_inches": round(pred, 4)
     }
+
+
+
+
 
 
 
