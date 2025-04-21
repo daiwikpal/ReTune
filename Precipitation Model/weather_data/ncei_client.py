@@ -85,8 +85,6 @@ class NCEIClient:
             
         logger.info(f"Requesting NCEI precipitation data from {start_date} to {end_date}")
         
-        # Get precipitation data
-        total_precip_inches = self._get_total_precipitation(start_date, end_date)
         
         # Create DataFrame with monthly data
         monthly_data = []

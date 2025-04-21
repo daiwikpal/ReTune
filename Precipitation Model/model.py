@@ -1,20 +1,25 @@
 """
-LSTM model for predicting NYC precipitation.
+LSTM model for predicting NYC precipitation using the past 12 months of data.
 """
+import os
+import logging
+from typing import Dict, Tuple
+
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-import os
-import logging
-from typing import Dict, List, Any, Optional, Tuple
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 
 import config
 from weather_data.data_processor import DataProcessor
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# these are the only columns we ever scale
 FEATURE_COLUMNS = [
     "precipitation",
     "month",
@@ -24,292 +29,187 @@ FEATURE_COLUMNS = [
     "precipitation_lag3",
 ]
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 class PrecipitationModel:
     """
-    LSTM model for predicting precipitation in NYC.
+    LSTM model that, given 12 months of features, predicts the next month's precipitation.
     """
-    
-    def __init__(self, sequence_length: int = None):
-        """
-        Initialize the precipitation prediction model.
-        
-        Args:
-            sequence_length: Number of time steps in each sequence
-        """
-        self.sequence_length = sequence_length or config.SEQUENCE_LENGTH
-        self.model = None
-        self.scalers = None
-        self.feature_columns = None
-        
-        # Create model directory if it doesn't exist
+    def __init__(self, sequence_length: int = 12):
+        self.sequence_length = sequence_length
+        self.model: tf.keras.Model | None = None
+        self.scalers: Dict[str, any] = {}
         os.makedirs(os.path.join(config.DATA_DIR, "models"), exist_ok=True)
-    
-    def build_model(self, input_shape: Tuple[int, int]) -> None:
-        """
-        Build the LSTM model architecture.
-        
-        Args:
-            input_shape: Shape of input data (sequence_length, num_features)
-        """
-        model = Sequential()
-        
-        # LSTM layers
-        model.add(LSTM(64, return_sequences=True, input_shape=input_shape))
-        model.add(Dropout(0.2))
-        
-        model.add(LSTM(32, return_sequences=False))
-        model.add(Dropout(0.2))
-        
-        # Output layer
-        model.add(Dense(1))
-        
-        # Compile the model
-        model.compile(optimizer='adam', loss='mse', metrics=['mae'])
-        
-        self.model = model
-        logger.info(f"Model built with input shape: {input_shape}")
-        
-        # Print model summary
-        model.summary()
-    
-    def train(self, 
-             X_train: np.ndarray, 
-             y_train: np.ndarray, 
-             X_val: np.ndarray = None, 
-             y_val: np.ndarray = None,
-             epochs: int = 100,
-             batch_size: int = 32) -> Dict[str, List[float]]:
-        """
-        Train the LSTM model.
-        
-        Args:
-            X_train: Training features
-            y_train: Training targets
-            X_val: Validation features
-            y_val: Validation targets
-            epochs: Number of training epochs
-            batch_size: Batch size for training
-            
-        Returns:
-            Dictionary with training history
-        """
+
+    def build_model(self, input_shape: Tuple[int,int]) -> None:
+        """Builds a two‑layer LSTM."""
+        m = tf.keras.models.Sequential([
+            tf.keras.layers.LSTM(64, return_sequences=True, input_shape=input_shape),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.LSTM(32),
+            tf.keras.layers.Dropout(0.2),
+            tf.keras.layers.Dense(1, name="precipitation_output")
+        ])
+        m.compile(optimizer="adam", loss="mse", metrics=["mae"])
+        self.model = m
+        logger.info(f"Built LSTM with input shape {input_shape}")
+        m.summary()
+
+    def train(self,
+              X_train: np.ndarray, y_train: np.ndarray,
+              X_val:   np.ndarray, y_val:   np.ndarray,
+              epochs: int = 100, batch_size: int = 32) -> None:
+        """Trains with early stopping + best‑model checkpointing."""
         if self.model is None:
             self.build_model((X_train.shape[1], X_train.shape[2]))
-        
-        # Callbacks
+
+        ckpt = os.path.join(config.DATA_DIR, "models", "precip_model.h5")
         callbacks = [
-            EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True),
-            ModelCheckpoint(
-                filepath=os.path.join(config.DATA_DIR, "models", "precipitation_model.h5"),
-                monitor='val_loss',
-                save_best_only=True
+            tf.keras.callbacks.EarlyStopping(
+                monitor="val_loss", patience=10,
+                restore_best_weights=True
+            ),
+            tf.keras.callbacks.ModelCheckpoint(
+                ckpt, monitor="val_loss", save_best_only=True
             )
         ]
-        
-        # Train the model
-        if X_val is not None and y_val is not None:
-            history = self.model.fit(
-                X_train, y_train,
-                epochs=epochs,
-                batch_size=batch_size,
-                validation_data=(X_val, y_val),
-                callbacks=callbacks,
-                verbose=1
-            )
-        else:
-            # Use a portion of training data for validation
-            history = self.model.fit(
-                X_train, y_train,
-                epochs=epochs,
-                batch_size=batch_size,
-                validation_split=0.2,
-                callbacks=callbacks,
-                verbose=1
-            )
-        
-        logger.info("Model training completed")
-        return history.history
-    
+        self.model.fit(
+            X_train, y_train,
+            validation_data=(X_val, y_val),
+            epochs=epochs, batch_size=batch_size,
+            callbacks=callbacks, verbose=1
+        )
+        logger.info("Training complete, best model saved to %s", ckpt)
+
     def evaluate(self, X_test: np.ndarray, y_test: np.ndarray) -> Dict[str, float]:
-        """
-        Evaluate the model on test data.
-        
-        Args:
-            X_test: Test features
-            y_test: Test targets
-            
-        Returns:
-            Dictionary with evaluation metrics
-        """
-        if self.model is None:
-            logger.error("Model not trained yet")
-            return {}
-        
-        # Make predictions
-        y_pred = self.model.predict(X_test)
-        
-        # Calculate metrics
-        mse = mean_squared_error(y_test, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-        
-        metrics = {
+        """Returns MSE, RMSE, MAE & R² on held‑out test set."""
+        preds = self.model.predict(X_test).flatten()
+        mse = mean_squared_error(y_test, preds)
+        return {
             "mse": mse,
-            "rmse": rmse,
-            "mae": mae,
-            "r2": r2
+            "rmse": float(np.sqrt(mse)),
+            "mae": mean_absolute_error(y_test, preds),
+            "r2":   r2_score(y_test, preds)
         }
-        
-        logger.info(f"Model evaluation metrics: {metrics}")
-        return metrics
-    
-    def predict(self, X: np.ndarray) -> np.ndarray:
+
+    def forecast_next(self, recent_df: pd.DataFrame) -> float:
         """
-        Make predictions with the trained model.
-        
-        Args:
-            X: Input features
-            
-        Returns:
-            Predicted values
+        Given the most recent `sequence_length` rows (with 'date' + FEATURE_COLUMNS),
+        returns next‑month precipitation in original units.
         """
-        if self.model is None:
-            logger.error("Model not trained yet")
-            return np.array([])
-        
-        # Make predictions
-        predictions = self.model.predict(X)
-        
-        return predictions
-    
-    def save_model(self, filepath: str = None) -> None:
-        """
-        Save the trained model.
-        
-        Args:
-            filepath: Path to save the model
-        """
-        if self.model is None:
-            logger.error("No model to save")
-            return
-        
-        if filepath is None:
-            filepath = os.path.join(config.DATA_DIR, "models", "precipitation_model.h5")
-        
-        # Save the model
-        self.model.save(filepath)
-        logger.info(f"Model saved to {filepath}")
-    
-    def load_model(self, filepath: str = None) -> None:
-        """
-        Load a trained model.
-        
-        Args:
-            filepath: Path to the saved model
-        """
-        if filepath is None:
-            filepath = os.path.join(config.DATA_DIR, "models", "precipitation_model.h5")
-        
-        # Check if model file exists
-        if not os.path.exists(filepath):
-            logger.error(f"Model file not found: {filepath}")
-            return
-        
-        # Load the model
-        self.model = tf.keras.models.load_model(filepath)
-        logger.info(f"Model loaded from {filepath}")
-        
-    
-    def set_scalers(self, scalers: Dict) -> None:
-        """
-        Set the scalers for denormalizing predictions.
-        
-        Args:
-            scalers: Dictionary of scalers for each feature
-        """
-        self.scalers = scalers
-    
-    def set_feature_columns(self, feature_columns: List[str]) -> None:
-        """
-        Set the feature columns used in the model.
-        
-        Args:
-            feature_columns: List of feature column names
-        """
-        self.feature_columns = feature_columns
+        # 1) Sort
+        df = recent_df.copy().sort_values("date")
+        # 2) Pull out only the columns we have scalers for:
+        feats = df[FEATURE_COLUMNS]
+        # 3) Normalize each column with its scaler
+        arr = np.zeros(feats.shape)
+        for i, col in enumerate(FEATURE_COLUMNS):
+            arr[:, i] = self.scalers[col] \
+                         .transform(feats[col].values.reshape(-1,1)) \
+                         .flatten()
+        # 4) Reshape to (1, seq_len, n_features)
+        X_in = arr.reshape((1, self.sequence_length, feats.shape[1]))
+        # 5) Predict then invert the precipitation scaler
+        p_norm = self.model.predict(X_in)
+        return float(
+            self.scalers["precipitation"]
+                .inverse_transform(p_norm)[0,0]
+        )
+
+    def save(self, path: str = None) -> None:
+        """Save model & scalers."""
+        if path is None:
+            path = os.path.join(config.DATA_DIR, "models", "precip_model.h5")
+        self.model.save(path)
+        np.save(
+            os.path.join(config.DATA_DIR, "models", "scalers.npy"),
+            self.scalers,
+        )
+        logger.info("Model and scalers saved.")
+
+    def load(self, path: str = None) -> None:
+        """Load model & scalers."""
+        if path is None:
+            path = os.path.join(config.DATA_DIR, "models", "precip_model.h5")
+        self.model = tf.keras.models.load_model(path)
+        self.scalers = np.load(
+            os.path.join(config.DATA_DIR, "models", "scalers.npy"),
+            allow_pickle=True
+        ).item()
+        logger.info("Model and scalers loaded.")
 
 
-def train_precipitation_model(data_path: str = None, sequence_length: int = None) -> PrecipitationModel:
+def train_precipitation_model(data_path: str = None) -> PrecipitationModel:
     """
-    Train a precipitation prediction model using NCEI-only monthly data.
+    Reads CSV, builds 12‑step sequences over exactly FEATURE_COLUMNS,
+    trains & returns the model.
     """
     if data_path is None:
         data_path = config.NCEI_DATA_FILE
 
-    if sequence_length is None:
-        sequence_length = config.SEQUENCE_LENGTH
-
-    ### NOTE: Read monthly NCEI data directly
-    data = pd.read_csv(data_path)
-    data["date"] = pd.to_datetime(data["date"])
-    monthly = data.sort_values("date").copy()
-
-    # Add temporal features
-    monthly["month"] = monthly["date"].dt.month
-    monthly["season"] = monthly["month"].map(lambda m: 
+    # 1) load & engineer
+    df = pd.read_csv(data_path, parse_dates=["date"]).sort_values("date")
+    df["month"]  = df["date"].dt.month
+    df["season"] = df["month"].map(lambda m:
         1 if m in [12,1,2] else
         2 if m in [3,4,5]  else
         3 if m in [6,7,8]  else 4
     )
+    for lag in (1,2,3):
+        df[f"precipitation_lag{lag}"] = df["precipitation"].shift(lag)
 
-    # Add lag features
-    for lag in (1, 2, 3):
-        monthly[f"precipitation_lag{lag}"] = monthly["precipitation"].shift(lag)
+    # drop any rows missing exactly those FEATURE_COLUMNS:
+    df = df.dropna(subset=FEATURE_COLUMNS).reset_index(drop=True)
+    logger.info("After dropna, %d rows remain", len(df))
 
-    monthly = monthly.dropna().reset_index(drop=True)
-
-
-    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
-
-    processor = DataProcessor()
-    X, y, scalers = processor.create_sequences(
-        monthly_selected,              # <‑‑ use the restricted frame
-        sequence_length=sequence_length,
-        target_column="precipitation"
+    # hand off to DataProcessor
+    monthly = df[["date"] + FEATURE_COLUMNS]
+    proc = DataProcessor()
+    X, y, scalers = proc.create_sequences(
+        monthly,
+        sequence_length=12,
+        target_column="precipitation",
     )
 
-    train_size = int(len(X) * config.TRAIN_SPLIT)
-    X_train, X_test = X[:train_size], X[train_size:]
-    y_train, y_test = y[:train_size], y[train_size:]
-    val_size = int(len(X_train) * 0.2)
-    X_train, X_val = X_train[:-val_size], X_train[-val_size:]
-    y_train, y_val = y_train[:-val_size], y_train[-val_size:]
+    # splits
+    total     = len(X)
+    train_end = int(total * config.TRAIN_SPLIT)
+    val_end   = train_end + int((total - train_end)*0.2)
 
-    model = PrecipitationModel(sequence_length)
-    model.build_model((X_train.shape[1], X_train.shape[2]))
-    history = model.train(X_train, y_train, X_val, y_val)
-    metrics = model.evaluate(X_test, y_test)
-    model.save_model()
-    model.set_scalers(scalers)
-    model.set_feature_columns(FEATURE_COLUMNS)
+    X_train, X_val, X_test = (
+        X[:train_end],
+        X[train_end:val_end],
+        X[val_end:]
+    )
+    y_train, y_val, y_test = (
+        y[:train_end],
+        y[train_end:val_end],
+        y[val_end:]
+    )
 
-    # model.plot_training_history(history, os.path.join(config.DATA_DIR, "training_history.png"))
-
-    y_pred = model.predict(X_test)
-    test_dates = monthly["date"].iloc[sequence_length + train_size : sequence_length + train_size + len(y_test)]
-    y_test_denorm = scalers["precipitation"].inverse_transform(y_test.reshape(-1, 1)).flatten()
-    y_pred_denorm = scalers["precipitation"].inverse_transform(y_pred).flatten()
-
-    # model.plot_predictions(test_dates, y_test_denorm, y_pred_denorm, 
-    #                        os.path.join(config.DATA_DIR, "predictions.png"))
-    
+    # build + train + save
+    model = PrecipitationModel(sequence_length=12)
+    model.scalers = scalers
+    model.build_model((12, X.shape[2]))
+    model.train(X_train, y_train, X_val, y_val)
+    print("Test metrics:", model.evaluate(X_test, y_test))
+    model.save()
     return model
 
 
 if __name__ == "__main__":
-    # Train the model
-    model = train_precipitation_model()
+    m = train_precipitation_model()
+    # just the last 12 months of features
+    df_all = pd.read_csv(config.NCEI_DATA_FILE, parse_dates=["date"]).sort_values("date")
+    df_all["month"]  = df_all["date"].dt.month
+    df_all["season"] = df_all["month"].map(lambda m:
+        1 if m in [12,1,2] else
+        2 if m in [3,4,5] else
+        3 if m in [6,7,8] else 4)
+    for lag in (1,2,3):
+        df_all[f"precipitation_lag{lag}"] = df_all["precipitation"].shift(lag)
+    df_all = df_all.dropna().reset_index(drop=True)
+
+    last_12 = df_all[["date"] + FEATURE_COLUMNS].iloc[-12:]
+    print("Next‐month:", m.forecast_next(last_12))
+
+
+

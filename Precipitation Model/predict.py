@@ -1,73 +1,81 @@
-from datetime import datetime
-import math
-import os
-import numpy as np
+"""
+Simple wrapper that autoregressively forecasts any future month.
+"""
 import pandas as pd
+import numpy as np
+from datetime import datetime
+from model import PrecipitationModel, FEATURE_COLUMNS
 import config
-from weather_data.data_processor import DataProcessor
-from model import PrecipitationModel
-from model import FEATURE_COLUMNS
 
 def predict_precip_for_month(target_month: str) -> float:
-    seq_len = config.SEQUENCE_LENGTH
-    model = PrecipitationModel(sequence_length=seq_len)
-    model.load_model()
+    """
+    target_month: "YYYY-MM"
 
-    ncei_path = os.path.join(config.DATA_DIR, "ncei_weather_data.csv")
+    Loads the trained model + scalers, then:
+     1) grabs last 12 cleaned rows
+     2) computes how many months ahead
+     3) loops forecast_next() that many times, each time appending the newly
+        forecasted row (updating month, season, and lags) so the next step
+        sees the synthetic data
+    """
+    # 1) Load the model & scalers
+    m = PrecipitationModel(sequence_length=12)
+    m.load()    # matches the .save() above
+
+    # 2) Load & clean the full dataset
     df = pd.read_csv(config.NCEI_DATA_FILE, parse_dates=["date"]).sort_values("date")
-
-    # No resampling – file is already monthly
-    df["month"]  = df["date"].dt.month
-    df["season"] = df["month"].map(lambda m:
-                    1 if m in [12,1,2] else
-                    2 if m in [3,4,5] else
-                    3 if m in [6,7,8] else 4)
-    for lag in (1, 2, 3):
-        df[f"precipitation_lag{lag}"] = df["precipitation"].shift(lag)
-
-    monthly = df.dropna().reset_index(drop=True)
-    monthly_selected = monthly[["date"] + FEATURE_COLUMNS]
-    proc = DataProcessor()
-    X_all, y_all, scalers = proc.create_sequences(
-        monthly_selected,
-        sequence_length=seq_len,
-        target_column="precipitation"
+    df["month"]  = df.date.dt.month
+    df["season"] = df.month.map(lambda m:
+        1 if m in [12,1,2] else
+        2 if m in [3,4,5]  else
+        3 if m in [6,7,8]  else 4
     )
+    for lag in (1,2,3):
+        df[f"precipitation_lag{lag}"] = df.precipitation.shift(lag)
+    clean = df.dropna().reset_index(drop=True)
 
-    last_seq = X_all[-1]
-    last_date = monthly["date"].iloc[-1].replace(day=1)
-
-    # compute how many months ahead
-    target = pd.to_datetime(f"{target_month}-01")
-    months_ahead = (target.year - last_date.year) * 12 + (target.month - last_date.month)
-
+    # 3) Determine how many months ahead
+    last_date = clean.date.iloc[-1].replace(day=1)
+    target    = pd.to_datetime(f"{target_month}-01")
+    months_ahead = ((target.year - last_date.year) * 12 +
+                    (target.month - last_date.month))
     if months_ahead < 1:
-        raise ValueError("Target month must be in the future")
+        raise ValueError("Target month must be after the most recent data")
 
-    # autoregressive prediction loop
+    # 4) Seed the loop with the final 12 rows
+    recent = clean[["date"] + FEATURE_COLUMNS].iloc[-12:].copy()
+
+    # 5) Autoregressively step forward
+    next_precip = None
     for _ in range(months_ahead):
-        y_next_norm = model.predict(last_seq.reshape(1, *last_seq.shape))
-        y_next = y_next_norm.flatten()[0]
-
-        # build the next timestep (normalized)
-        precip_index = FEATURE_COLUMNS.index("precipitation")
-        base = last_seq[-1].copy()        # last timestep’s features
-        base[precip_index] = y_next       # inject the prediction
-
-        # slide the window forward by one month
-        last_seq = np.vstack([last_seq[1:], base])
-
-    # final inverse transform
-    total_rain = scalers["precipitation"].inverse_transform([[y_next]])[0][0]
-    if not math.isfinite(total_rain):
-        raise ValueError("Model produced NaN or infinite precipitation")
-
-    return round(float(total_rain), 4)
-
+        next_precip = m.forecast_next(recent)
+        # build a synthetic “next row”
+        new_date = recent.date.iloc[-1] + pd.offsets.MonthBegin(1)
+        month    = new_date.month
+        season   = (1 if month in [12,1,2] else
+                    2 if month in [3,4,5]  else
+                    3 if month in [6,7,8]  else 4)
+        # shift lags
+        l1 = next_precip
+        l2 = recent.precipitation_lag1.iloc[-1]
+        l3 = recent.precipitation_lag2.iloc[-1]
+        # append
+        new_row = {
+            "date": new_date,
+            "precipitation":      next_precip,
+            "month":              month,
+            "season":             season,
+            "precipitation_lag1": l1,
+            "precipitation_lag2": l2,
+            "precipitation_lag3": l3,
+        }
+        recent = recent.append(new_row, ignore_index=True).iloc[1:]
+    return round(float(next_precip), 4)
 
 if __name__ == "__main__":
-    next_month = (datetime.today().replace(day=1) + pd.offsets.MonthEnd(1)).strftime("%Y-%m")
-    rain = predict_precip_for_month(next_month)
-    print(f"Forecast for {next_month}: {rain:.3f} in. of rain")
+    nm = (datetime.today().replace(day=1) + pd.offsets.MonthEnd(1)).strftime("%Y-%m")
+    print(f"Forecast for {nm}:", predict_precip_for_month(nm))
+
+
 
 

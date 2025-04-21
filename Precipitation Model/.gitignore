@@ -4,3 +4,5 @@ data/
 *.pyc
 .venv/
 weather_data/data/
+.DS_Store
+.json

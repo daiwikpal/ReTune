@@ -33,6 +33,34 @@ class DataProcessor:
         
         # Create data directory if it doesn't exist
         os.makedirs(config.DATA_DIR, exist_ok=True)
+
+    def _aggregate_noaa_monthly(self, daily_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Convert NOAA *daily* dataframe to a *monthly* dataframe
+        with sensible aggregations for each feature.
+        Missing columns get filled with NaN so .agg() will never KeyError.
+        """
+        if daily_df.empty:
+            return pd.DataFrame()
+
+        df = daily_df.copy()
+        df["date"] = pd.to_datetime(df["date"])
+        df = df.set_index("date")
+
+        # build our aggregation map, ensure every key exists
+        agg_map: Dict[str, Any] = {"precipitation": "sum"}
+        for col in ("temperature_max", "temperature_min", "humidity", "wind_speed", "pressure"):
+            if col not in df.columns:
+                df[col] = np.nan
+                logger.warning(f"[aggregate] NOAA daily missing '{col}', filling with NaN")
+            agg_map[col] = "mean"
+
+        monthly = df.resample("MS").agg(agg_map).reset_index()
+        monthly["temperature_range"] = (
+            monthly["temperature_max"] - monthly["temperature_min"]
+        )
+        return monthly
+
     
     def collect_historical_data(self, 
                                 start_date: str = None, 
@@ -139,6 +167,7 @@ class DataProcessor:
         
         # Ensure 'date' column exists before sorting
         if 'date' in data.columns:
+            data["date"] = pd.to_datetime(data["date"], errors="coerce")
             data = data.sort_values("date")
         else:
             logger.warning("'date' column not found in combined data. Cannot sort by date.")
@@ -149,33 +178,6 @@ class DataProcessor:
         
         return data
     
-    def create_sequences(self, 
-                        data: pd.DataFrame, 
-                        sequence_length: int = None,
-                        target_column: str = "precipitation") -> Tuple[np.ndarray, np.ndarray]:
-        """
-        Create sequences for LSTM model training.
-        
-        Args:
-            data: Prepared data
-            sequence_length: Number of time steps in each sequence
-            target_column: Column to predict
-            
-        Returns:
-            Tuple of (X, y) arrays for model training
-        """
-        if sequence_length is None:
-            sequence_length = config.SEQUENCE_LENGTH
-            
-        data = data.sort_values("date")
-        features = data.drop(columns=["date"])
-        normalized_data, scalers = self._normalize_data(features)
-        X, y = [], []
-        for i in range(len(normalized_data) - sequence_length):
-            X.append(normalized_data[i:i+sequence_length])
-            y.append(normalized_data[i+sequence_length, features.columns.get_loc(target_column)])
-        
-        return np.array(X), np.array(y), scalers
     
     def save_data(self, data: pd.DataFrame, filename: str | None = None) -> str:
         """
@@ -298,6 +300,8 @@ class DataProcessor:
                 featured_data["date"] = pd.to_datetime(featured_data["date"], errors="coerce")
             
             featured_data["month"] = featured_data["date"].dt.month
+            featured_data["month_cos"] = np.cos(2 * np.pi * featured_data["month"] / 12)
+            featured_data["month_sin"] = np.sin(2 * np.pi * featured_data["month"] / 12)
             featured_data["day"] = featured_data["date"].dt.day
             featured_data["dayofyear"] = featured_data["date"].dt.dayofyear
             featured_data["season"] = featured_data["month"].apply(
@@ -342,22 +346,59 @@ class DataProcessor:
         Returns:
             DataFrame with selected features
         """
+        # always keep date & target
         features_to_keep = ["date", "precipitation"]
         
+        # now list every input you actually want
         possible_features = [
-            "temperature_max", "temperature_min", "temperature_avg", 
-            "humidity", "wind_speed", "pressure", "dew_point",
-            "temperature_range", "precipitation_lag1", "precipitation_lag7",
-            "precipitation_rolling_mean_7d", "month", "season"
+            "temperature_max", "temperature_min",
+            "humidity", "wind_speed", "pressure",
+            "temperature_range",
+            "precipitation_lag1", "precipitation_lag2", "precipitation_lag3", "precipitation_lag7",
+            "precipitation_rolling_mean_7d", "precipitation_rolling_max_7d",
+            "season", "month_cos", "month_sin",
         ]
+        for feat in possible_features:
+            if feat in data.columns:
+                features_to_keep.append(feat)
         
-        for feature in possible_features:
-            if feature in data.columns:
-                features_to_keep.append(feature)
-        
-        selected_data = data[features_to_keep]
-        
-        return selected_data
+        return data[features_to_keep]
+    
+    
+    def create_sequences(self, 
+                         data: pd.DataFrame, 
+                         sequence_length: int = None,
+                         target_column: str = "precipitation") -> Tuple[np.ndarray, np.ndarray, Dict]:
+        """
+        Create sequences for LSTM model training.
+        """
+        if sequence_length is None:
+            sequence_length = config.SEQUENCE_LENGTH
+
+        # 1) sort by date
+        data = data.sort_values("date").reset_index(drop=True)
+
+        # 2) drop any rows where any of our input-features are NaN
+        input_cols = list(data.columns)
+        input_cols.remove(target_column)
+        data = data.dropna(subset=input_cols)
+
+        # 3) drop date and normalize
+        features = data.drop(columns=["date"])
+        normalized_data, scalers = self._normalize_data(features)
+
+        # 4) build X, y
+        X, y = [], []
+        for i in range(len(normalized_data) - sequence_length):
+            X.append(normalized_data[i : i + sequence_length])
+            # target is the precipitation value _after_ the window
+            y.append(
+                normalized_data[i + sequence_length, 
+                                features.columns.get_loc(target_column)]
+            )
+
+        return np.array(X), np.array(y), scalers
+
     
     def _normalize_data(self, data: pd.DataFrame) -> Tuple[np.ndarray, Dict]:
         """
@@ -381,42 +422,96 @@ class DataProcessor:
         
         return normalized_data, scalers
 
-    def collect_ncei_data(self, start_date: str, end_date: str, save_path: str = "data/ncei_weather_data.csv") -> pd.DataFrame:
+    def collect_ncei_data(self,
+                          start_date: str,
+                          end_date: str,
+                          save_path: str = "data/ncei_weather_data.csv") -> pd.DataFrame:
         """
-        Collect historical monthly precipitation data from NCEI and save to a separate file.
-        
-        Args:
-            start_date: Start date in YYYY-MM-DD format
-            end_date: End date in YYYY-MM-DD format
-            save_path: Path to save the CSV
-            
-        Returns:
-            DataFrame with NCEI monthly precipitation data
+        Pull NCEI *monthly* precipitation AND enrich it with
+        aggregated NOAA features, then save a single combined CSV.
+
+        The resulting file has one row per month and the columns:
+            date, precipitation, temperature_max, temperature_min,
+            humidity, wind_speed, pressure, temperature_range,
+            precipitation_lag1, precipitation_lag2, precipitation_lag3,
+            season, month_cos, month_sin
         """
-        logger.info(f"Collecting NCEI data from {start_date} to {end_date}")
-        
-        df = self.ncei_client.get_historical_monthly_precipitation(years=3)
-        
-        if df.empty:
+        # Fetch & prepare the NCEI frame
+        logger.info(f"Collecting NCEI precipitation {start_date} → {end_date}")
+        # only fetch the monthly totals for our window (fast!)
+        ncei = self.ncei_client.get_monthly_precipitation(start_date, end_date)
+        if ncei.empty:
             logger.warning("No NCEI data returned.")
-            return df
-        
-        # standardized output!
-        df = df.rename(columns={
-            "TimeStamp": "date",
-            "PRECIPITATION": "precipitation"
-        })
-        df["date"] = pd.to_datetime(df["date"])
+            return ncei
 
-        # Save it to file
-        save_path = os.path.join(
-            config.DATA_DIR, os.path.basename(save_path)
+        ncei = (
+            ncei
+            .rename(columns={"TimeStamp": "date", "PRECIPITATION": "precipitation"})
+            .assign(date=lambda df: pd.to_datetime(df["date"]))
+            .sort_values("date")
         )
-        os.makedirs(config.DATA_DIR, exist_ok=True)
-        df.to_csv(save_path, index=False)
-        logger.info(f"NCEI data saved to {save_path}")
-        return df
+        # restrict to your window
+        ncei = ncei[(ncei["date"] >= start_date) & (ncei["date"] <= end_date)]
 
+        # Load/cache NOAA daily so we don’t hammer the API each run
+        debug_daily = os.path.join(config.DATA_DIR, "_debug_noaa.csv")
+        if os.path.exists(debug_daily):
+            logger.info("🛠 Loading NOAA daily from cache (_debug_noaa.csv), skipping API")
+            noaa_daily = pd.read_csv(debug_daily, parse_dates=["date"])
+        else:
+            logger.info("Collecting NOAA daily data for feature enrichment …")
+            if self.noaa_client is None:
+                self.noaa_client = NOAAClient()
+            noaa_daily = self.noaa_client.get_daily_data(start_date, end_date)
+            noaa_daily.to_csv(debug_daily, index=False)
+            logger.info(f"  → cached raw NOAA daily to {debug_daily}")
+
+        #  Rename & aggregate NOAA into monthly
+        if "date" not in noaa_daily.columns:
+            noaa_daily["date"] = pd.to_datetime(noaa_daily.index)
+        noaa_daily = noaa_daily.rename(columns={
+            "PRCP": "precipitation",
+            "TMAX": "temperature_max",
+            "TMIN": "temperature_min",
+            "TAVG": "temperature_avg",
+            "AWND": "wind_speed",
+        })
+        noaa_monthly = self._aggregate_noaa_monthly(noaa_daily)
+        noaa_monthly = noaa_monthly.drop(columns=["precipitation"])
+
+        #  Merge NCEI + NOAA monthlies
+        merged = pd.merge(ncei, noaa_monthly, on="date", how="left")
+
+        # Add season & cyclical month
+        merged["month"] = merged["date"].dt.month
+        merged["season"] = merged["month"].map(
+            lambda m: 1 if m in [12,1,2]
+                      else 2 if m in [3,4,5]
+                      else 3 if m in [6,7,8]
+                      else 4
+        )
+        merged["month_cos"] = np.cos(2 * np.pi * merged["month"] / 12)
+        merged["month_sin"] = np.sin(2 * np.pi * merged["month"] / 12)
+
+        # Lag features
+        for lag in (1, 2, 3, 7):
+            merged[f"precipitation_lag{lag}"] = merged["precipitation"].shift(lag)
+
+        # 7‑month rolling statistics
+        merged["precipitation_rolling_mean_7d"] = merged["precipitation"].rolling(window=7).mean()
+        merged["precipitation_rolling_max_7d"]  = merged["precipitation"].rolling(window=7).max()
+
+        # drop any rows with NaNs from the shifts
+        merged = merged.dropna(subset=["precipitation"]).reset_index(drop=True)
+
+
+        # Save & return
+        save_path = os.path.join(config.DATA_DIR, os.path.basename(save_path))
+        os.makedirs(config.DATA_DIR, exist_ok=True)
+        merged.to_csv(save_path, index=False)
+        logger.info(f"Combined NCEI + NOAA monthly data saved → {save_path}")
+
+        return merged
 
 
 if __name__ == "__main__":
@@ -428,6 +523,6 @@ if __name__ == "__main__":
     X, y, scalers = processor.create_sequences(prepared_data, sequence_length=30)
     print(f"X shape: {X.shape}, y shape: {y.shape}")
     # Collect and save NCEI data separately
-    ncei_data = processor.collect_ncei_data("2020-01-01", "2022-12-31")
+    ncei_data = processor.collect_ncei_data("1996-01-01", datetime.today().strftime("%Y-%m-%d"))
     print(f"NCEI Data shape: {ncei_data.shape}")
 
