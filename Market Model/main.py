@@ -1,76 +1,127 @@
-import pandas as pd
-import numpy as np
-from datetime import timedelta, date
-from market_model_full import train_market_model
 import os
-import config
+import time
+import warnings
+import logging
 
-# Ensure data folder exists
-os.makedirs(config.DATA_DIR, exist_ok=True)
-
-# Generate 100 days of mock market data
-start = date(2024, 12, 30)
-rows = []
-for i in range(100):
-    d = start + timedelta(days=i)
-    price = round(0.42 + 0.03 * np.sin(i / 4), 3)         # fake market_price
-    oi = np.random.randint(1500, 2500)                   # open_interest
-    volume = np.random.randint(100, 400)                 # trading_volume
-    rows.append([d, price, oi, volume])
-
-df = pd.DataFrame(rows, columns=["date", "market_price", "open_interest", "trading_volume"])
-df.to_csv(config.MARKET_OUTPUT_FILE, index=False)
-
-print(f"✅ Mock market data created at {config.MARKET_OUTPUT_FILE}")
-
-train_market_model(config.MARKET_OUTPUT_FILE)
-import os
-import config
-from market_model_full import (
-    collect_and_prepare_market_data_only,
-    train_market_model,
-    predict_market
+# suppress sklearn feature‑name warnings
+warnings.filterwarnings(
+    "ignore",
+    message="X does not have valid feature names, but MinMaxScaler was fitted with feature names"
 )
 
+# suppress TensorFlow logs
+logging.getLogger("tensorflow").setLevel(logging.ERROR)
 
-def run_pipeline():
-    print("\n🚀 Running Kalshi Market Trend Model Pipeline...")
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+import joblib
+from datetime import datetime, timezone
 
-    # Check if mock data exists, if not create it
-    if not os.path.exists(config.MARKET_OUTPUT_FILE):
-        print("📁 No market_data.csv found. Generating mock data...")
-        from datetime import timedelta, date
-        import pandas as pd
-        import numpy as np
+import config
+from data_processor import MarketDataProcessor
+from market_model_full import train_market_model, MODEL_PATH, SCALER_PATH
 
-        os.makedirs(config.DATA_DIR, exist_ok=True)
-        start = date(2024, 12, 30)
-        rows = []
-        for i in range(100):
-            d = start + timedelta(days=i)
-            price = round(0.35 + 0.1 * np.sin(i / 4), 3)  # stays between 0.25 and 0.45
-            oi = np.random.randint(1500, 2500)
-            volume = np.random.randint(100, 400)
-            rows.append([d, price, oi, volume])
 
-        df = pd.DataFrame(rows, columns=["date", "market_price", "open_interest", "trading_volume"])
-        df.to_csv(config.MARKET_OUTPUT_FILE, index=False)
-        print("✅ Mock market data created.")
+def choose_price_from_row(row: pd.Series) -> float:
+    """Return first available of yes_ask.close, yes_bid.close, or price.close (in cents)."""
+    for col in ("yes_ask.close", "yes_bid.close", "price.close"):
+        if col in row.index and pd.notna(row[col]):
+            return row[col]
+    raise KeyError("no price column found")
 
-    # Train model
-    print("🧠 Training model...")
-    train_market_model(config.MARKET_OUTPUT_FILE)
-    print("✅ Model trained.")
 
-    # Make test prediction
-    print("🔮 Making a test prediction...")
-    example_input = [0.46, 2100, 320]  # Replace with real data if available
-    prediction = predict_market(example_input)
-    print("📈 Prediction result:")
-    for key, value in prediction.items():
-        print(f"   {key}: {value}")
+def run_rain_pipeline() -> None:
+    # retrain LSTM on daily CSV
+    os.makedirs(config.DATA_DIR, exist_ok=True)
+    csv_path = os.path.join(config.DATA_DIR, "KXRAINNYCM_4inch_daily.csv")
+    train_market_model(csv_path)
+
+    # fetch this month's daily bars
+    mdp = MarketDataProcessor()
+    now = datetime.now(timezone.utc)
+    month_start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+    daily = mdp.candlesticks(
+        config.SERIES_TICKER,
+        config.CURRENT_RAIN_MARKET_TICKER,
+        int(month_start.timestamp()),
+        int(now.timestamp()),
+        period_interval=config.DAILY_INTERVAL,
+    )
+    if daily.empty:
+        return
+
+    # build feature dataframe
+    df = daily.copy()
+    df["market_price"] = df.apply(lambda r: choose_price_from_row(r) / 100.0, axis=1)
+    df["open_interest"] = df["open_interest"]
+    df["trading_volume"] = df["volume"]
+    df = (
+        df[["time", "market_price", "open_interest", "trading_volume"]]
+        .rename(columns={"time": "timestamp"})
+        .sort_values("timestamp")
+        .reset_index(drop=True)
+    )
+
+    # add lags and rolling mean
+    for lag in (1, 2):
+        df[f"market_price_lag{lag}"] = df["market_price"].shift(lag)
+        df[f"open_interest_lag{lag}"] = df["open_interest"].shift(lag)
+        df[f"trading_volume_lag{lag}"] = df["trading_volume"].shift(lag)
+    df["trading_volume_roll7"] = df["trading_volume"].rolling(7).mean()
+
+    features = [
+        "market_price",
+        "market_price_lag1", "market_price_lag2",
+        "open_interest", "open_interest_lag1", "open_interest_lag2",
+        "trading_volume", "trading_volume_lag1", "trading_volume_lag2",
+        "trading_volume_roll7",
+    ]
+    df = df.dropna(subset=features).reset_index(drop=True)
+    if len(df) < config.MARKET_SEQUENCE_LENGTH:
+        return
+
+    # load model and scaler
+    model = tf.keras.models.load_model(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+
+    # predict next value
+    window = df[features].values[-config.MARKET_SEQUENCE_LENGTH:]
+    X = scaler.transform(window).reshape((1, config.MARKET_SEQUENCE_LENGTH, len(features)))
+    forecast_price = float(model.predict(X, verbose=0)[0, 0])
+
+    # fetch most recent minute bar for live price
+    end_ts = int(time.time())
+    start_ts = end_ts - 12 * 3600
+    minute = mdp.candlesticks(
+        config.SERIES_TICKER,
+        config.CURRENT_RAIN_MARKET_TICKER,
+        start_ts,
+        end_ts,
+        period_interval=1,
+    )
+    current_price = None
+    if not minute.empty:
+        for _, row in minute[::-1].iterrows():
+            try:
+                current_price = choose_price_from_row(row) / 100.0
+                break
+            except KeyError:
+                continue
+    if current_price is None:
+        info = mdp.get_market_info(config.CURRENT_RAIN_MARKET_TICKER)
+        current_price = info.get("last_price", 0) / 100.0
+
+    # determine signal
+    sentiment = "undervalued" if forecast_price > current_price else "overvalued"
+    action = "go long" if sentiment == "undervalued" else "go short"
+
+    # print results
+    print(config.CURRENT_RAIN_MARKET_TICKER)
+    print(f"Current price: {current_price:.4f}")
+    print(f"Forecast:      {forecast_price:.4f}")
+    print(f"Sentiment:     {sentiment} → {action}")
 
 
 if __name__ == "__main__":
-    run_pipeline()
-    
+    run_rain_pipeline()
