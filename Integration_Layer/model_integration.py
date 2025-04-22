@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class ModelIntegrator:
     """Integration layer for anomaly and precipitation models"""
     
-    def __init__(self, anomaly_model_url: str = "http://localhost:8000"):
+    def __init__(self, anomaly_model_url: str = "http://localhost:8000", precipitation_model_url: str = "http://localhost:8001"):
         """
         Initialize the model integrator
         
@@ -27,6 +27,7 @@ class ModelIntegrator:
             anomaly_model_url: Base URL for the anomaly model API
         """
         self.anomaly_model_url = anomaly_model_url
+        self.precipitation_model_url = precipitation_model_url
         logger.info(f"Initialized ModelIntegrator with anomaly model at {anomaly_model_url}")
     
     def get_anomaly_prediction(self, target_month: str) -> Optional[float]:
@@ -58,6 +59,34 @@ class ModelIntegrator:
             logger.exception(f"Error getting anomaly prediction: {str(e)}")
             return None
     
+    def get_precipitation_prediction(self, target_month: str) -> Optional[float]:
+        """
+        Get prediction from the precipitation model
+        """
+
+        try:
+            endpoint = f"{self.precipitation_model_url}/predict"
+            payload = {
+                "year": int(target_month[:4]),
+                "month": int(target_month[5:])
+            }
+            
+            logger.info(f"Requesting precipitation prediction for {target_month}")
+            response = requests.post(endpoint, json=payload)
+            
+            if response.status_code == 200:
+                result = response.json()
+                prediction = result.get("predicted_monthly_precipitation_inches")
+                logger.info(f"Received precipitation prediction: {prediction}")
+                return prediction
+            else:
+                logger.error(f"precipitation model request failed with status {response.status_code}: {response.text}")
+                return None
+        except Exception as e:
+            logger.exception(f"Error getting precipitation prediction: {str(e)}")
+            return None
+        
+    
     def bayesian_model_averaging(self, anomaly_prediction: float, precipitation_prediction: float, 
                                  anomaly_weight: float = 0.5) -> float:
         """
@@ -80,19 +109,16 @@ class ModelIntegrator:
         
         return combined_prediction
     
-    def get_integrated_prediction(self, target_month: str, 
-                                 precipitation_prediction: Optional[float] = None,
-                                 anomaly_weight: float = 0.5) -> Dict:
+    def get_integrated_prediction(self, target_month: str, anomaly_weight: float = 0.5) -> Dict:
         """
         Get integrated prediction combining anomaly and precipitation models
         
         Args:
             target_month: Target month in YYYY-MM format
-            precipitation_prediction: Optional prediction from precipitation model
             anomaly_weight: Weight for anomaly model (between 0 and 1)
         
         Returns:
-            Dictionary with prediction results
+            Dictionary with prediction results from both models and their integration
         """
         # Get anomaly prediction
         anomaly_prediction = self.get_anomaly_prediction(target_month)
@@ -104,13 +130,13 @@ class ModelIntegrator:
                 "timestamp": datetime.now().isoformat()
             }
         
-        # If precipitation prediction is not provided, we can only return the anomaly prediction
+        # Get precipitation prediction
+        precipitation_prediction = self.get_precipitation_prediction(target_month)
+        
         if precipitation_prediction is None:
             return {
-                "success": True,
-                "anomaly_prediction": anomaly_prediction,
-                "integrated_prediction": None,
-                "message": "Precipitation prediction not provided, returning only anomaly prediction",
+                "success": False,
+                "error": "Failed to get precipitation prediction",
                 "timestamp": datetime.now().isoformat()
             }
         
@@ -137,19 +163,15 @@ class ModelIntegrator:
 # Example usage
 if __name__ == "__main__":
     # Example of how to use the integrator
-    integrator = ModelIntegrator(anomaly_model_url="http://localhost:8000")
+    integrator = ModelIntegrator(anomaly_model_url="http://localhost:8000", precipitation_model_url="http://localhost:8001")
     
-    # Example with only anomaly prediction
+    # Get integrated prediction with automatic fetching from both models
     result = integrator.get_integrated_prediction(target_month="2023-05")
     print(json.dumps(result, indent=2))
     
-    # Example with both predictions
-    # In a real implementation, you would get this from the precipitation model
-    example_precip_prediction = 2.5
-    
-    result_with_both = integrator.get_integrated_prediction(
+    # Example with custom weights
+    result_with_custom_weights = integrator.get_integrated_prediction(
         target_month="2023-05",
-        precipitation_prediction=example_precip_prediction,
         anomaly_weight=0.6  # Give more weight to anomaly model
     )
-    print(json.dumps(result_with_both, indent=2)) 
+    print(json.dumps(result_with_custom_weights, indent=2)) 

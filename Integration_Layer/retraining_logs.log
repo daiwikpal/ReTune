@@ -1,0 +1,5 @@
+2025-04-22 02:22:10,810 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 02:22:12,410 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': '/Users/daiwikpal/VSCode/ReTune/Anomaly Model/saved_models/lstm_retrained_20250422_022210.pkl', 'test_mae': 1.6867177089055378, 'timestamp': '20250422_022210'}
+2025-04-22 02:22:14,416 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 02:22:14,469 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 02:22:14,469 - __main__ - INFO - Both models successfully retrained
