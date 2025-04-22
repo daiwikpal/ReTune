@@ -3,3 +3,28 @@
 2025-04-22 02:22:14,416 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
 2025-04-22 02:22:14,469 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
 2025-04-22 02:22:14,469 - __main__ - INFO - Both models successfully retrained
+2025-04-22 15:36:29,045 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 15:36:35,088 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': 'C:\\Users\\shubh\\OneDrive\\Desktop\\Enterprise\\ReTune\\Anomaly Model\\saved_models\\lstm_retrained_20250422_153631.pkl', 'test_mae': 1.6870275735855103, 'timestamp': '20250422_153631'}
+2025-04-22 15:36:37,105 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 15:36:39,165 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 15:36:39,165 - __main__ - INFO - Both models successfully retrained
+2025-04-22 15:38:34,159 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 15:38:38,859 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': 'C:\\Users\\shubh\\OneDrive\\Desktop\\Enterprise\\ReTune\\Anomaly Model\\saved_models\\lstm_retrained_20250422_153836.pkl', 'test_mae': 1.691246469815572, 'timestamp': '20250422_153836'}
+2025-04-22 15:38:40,862 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 15:38:42,937 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 15:38:42,937 - __main__ - INFO - Both models successfully retrained
+2025-04-22 15:42:22,103 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 15:42:25,990 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': 'C:\\Users\\shubh\\OneDrive\\Desktop\\Enterprise\\ReTune\\Anomaly Model\\saved_models\\lstm_retrained_20250422_154224.pkl', 'test_mae': 1.6929588715235393, 'timestamp': '20250422_154224'}
+2025-04-22 15:42:27,991 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 15:42:30,048 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 15:42:30,048 - __main__ - INFO - Both models successfully retrained
+2025-04-22 15:48:12,628 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 15:48:16,353 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': 'C:\\Users\\shubh\\OneDrive\\Desktop\\Enterprise\\ReTune\\Anomaly Model\\saved_models\\lstm_retrained_20250422_154814.pkl', 'test_mae': 1.693876584370931, 'timestamp': '20250422_154814'}
+2025-04-22 15:48:18,354 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 15:48:20,401 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 15:48:20,401 - __main__ - INFO - Both models successfully retrained
+2025-04-22 15:49:05,264 - __main__ - INFO - Retraining anomaly model with data from 2025-01-01 to 2025-04-01
+2025-04-22 15:49:08,908 - __main__ - INFO - Anomaly model retrained successfully: {'success': True, 'model_path': 'C:\\Users\\shubh\\OneDrive\\Desktop\\Enterprise\\ReTune\\Anomaly Model\\saved_models\\lstm_retrained_20250422_154907.pkl', 'test_mae': 1.7041042248408, 'timestamp': '20250422_154907'}
+2025-04-22 15:49:10,911 - __main__ - INFO - Retraining precipitation model for year=2025, month=3
+2025-04-22 15:49:12,964 - __main__ - INFO - Precipitation model retrained successfully: {'message': 'Retraining started in the background for 2025-3.'}
+2025-04-22 15:49:12,964 - __main__ - INFO - Both models successfully retrained
