@@ -7,10 +7,10 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))          # …/Precipitation Model
-DATA_DIR     = os.path.join(PROJECT_ROOT, "data")                  # …/Precipitation Model/data
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))          # …/Precipitation Model
+DATA_DIR     = os.path.join(PROJECT_ROOT, "data")                  # …/Precipitation Model/data
 OUTPUT_FILE  = os.path.join(DATA_DIR, "nyc_weather_data.csv")      # default CSV location
-NCEI_DATA_FILE = "weather_data/data/ncei_weather_data.csv"
+NCEI_DATA_FILE = os.path.join(DATA_DIR, "monthly_weather_data.csv")
 
 # NYC coordinates
 NYC_LAT = 40.7128

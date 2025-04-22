@@ -66,13 +66,14 @@ class NCEIClient:
         # Add handler to logger
         logger.addHandler(ch)
     
-    def get_monthly_precipitation(self, start_date: Union[str, date], end_date: Union[str, date]) -> pd.DataFrame:
+    def get_monthly_precipitation(self, start_date: Union[str, date], end_date: Union[str, date], timeout: int = 30) -> pd.DataFrame:
         """
         Fetch monthly precipitation data for NYC (Central Park)
         
         Args:
             start_date: Start date in YYYY-MM-DD format or date object
             end_date: End date in YYYY-MM-DD format or date object
+            timeout: Request timeout in seconds (default: 30)
             
         Returns:
             DataFrame with monthly precipitation data (in inches)
@@ -85,6 +86,8 @@ class NCEIClient:
             
         logger.info(f"Requesting NCEI precipitation data from {start_date} to {end_date}")
         
+        # Get precipitation data
+        total_precip_inches = self._get_total_precipitation(start_date, end_date, timeout=timeout)
         
         # Create DataFrame with monthly data
         monthly_data = []
@@ -146,12 +149,13 @@ class NCEIClient:
             logger.warning(f"No precipitation data found for period {start_date} to {end_date}")
             return pd.DataFrame()
     
-    def get_historical_monthly_precipitation(self, years: int = 30) -> pd.DataFrame:
+    def get_historical_monthly_precipitation(self, years: int = 30, timeout: int = 60) -> pd.DataFrame:
         """
         Fetch historical monthly precipitation data from January 1996 to present
         
         Args:
             years: Number of years of historical data to fetch (default: 30, but will always go back to at least 1996)
+            timeout: Request timeout in seconds (default: 60)
             
         Returns:
             DataFrame with monthly precipitation data (in inches)
@@ -188,7 +192,7 @@ class NCEIClient:
             
             try:
                 # Get data for this year
-                chunk_data = self.get_monthly_precipitation(current_start, current_end)
+                chunk_data = self.get_monthly_precipitation(current_start, current_end, timeout=timeout)
                 
                 if not chunk_data.empty:
                     logger.info(f"Got data for year {current_start.year}: {len(chunk_data)} months")
@@ -223,13 +227,14 @@ class NCEIClient:
         logger.info(f"Final historical precipitation dataset contains {len(combined_df)} months from {combined_df['TimeStamp'].min()} to {combined_df['TimeStamp'].max()}")
         return combined_df
     
-    def _get_total_precipitation(self, start: date, end: date) -> float:
+    def _get_total_precipitation(self, start: date, end: date, timeout: int = 30) -> float:
         """
         Get the total precipitation in inches between start and end dates (inclusive).
         
         Args:
             start: Start date
             end: End date
+            timeout: Request timeout in seconds (default: 30)
             
         Returns:
             Total precipitation in inches
@@ -260,7 +265,7 @@ class NCEIClient:
             params["offset"] = offset
             try:
                 logger.debug(f"Making API request with offset {offset} (page {page_count})")
-                response = requests.get(self.base_url, headers=headers, params=params, timeout=30)
+                response = requests.get(self.base_url, headers=headers, params=params, timeout=timeout)
                 
                 # For debugging
                 logger.debug(f"Request → {response.request.method} {response.request.url}")
@@ -297,13 +302,14 @@ class NCEIClient:
         logger.debug(f"Total precipitation for {start} to {end}: {total_inches:.2f} inches")
         return total_inches
     
-    def get_month_total(self, year: int, month: int) -> float:
+    def get_month_total(self, year: int, month: int, timeout: int = 30) -> float:
         """
         Get total precipitation in inches for a specific month and year.
         
         Args:
             year: Year (e.g., 2024)
             month: Month (1-12)
+            timeout: Request timeout in seconds (default: 30)
             
         Returns:
             Total precipitation in inches for the month
@@ -316,4 +322,114 @@ class NCEIClient:
         end_date = date(year, month, calendar.monthrange(year, month)[1])
         
         logger.info(f"Getting precipitation total for {year}-{month:02d}")
-        return self._get_total_precipitation(start_date, end_date) 
+        return self._get_total_precipitation(start_date, end_date, timeout=timeout)
+    
+    def get_daily_data(self, start_date: Union[str, date], end_date: Union[str, date], timeout: int = 30) -> pd.DataFrame:
+        """
+        Fetch daily weather data for NYC (Central Park)
+        
+        Args:
+            start_date: Start date in YYYY-MM-DD format or date object
+            end_date: End date in YYYY-MM-DD format or date object
+            timeout: Request timeout in seconds (default: 30)
+            
+        Returns:
+            DataFrame with daily weather data including precipitation, temperature, etc.
+        """
+        # Convert string dates to date objects if needed
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+            
+        logger.info(f"Requesting NCEI daily data from {start_date} to {end_date}")
+        
+        # Define datatypes to fetch
+        datatypes = ["PRCP", "TMAX", "TMIN", "TAVG", "AWND"]
+        datatype_param = ",".join(datatypes)
+        
+        headers = {"token": self.token}
+        params = {
+            "datasetid": self.dataset_id,
+            "datatypeid": datatype_param,
+            "stationid": self.station_id,
+            "startdate": start_date.isoformat(),
+            "enddate": end_date.isoformat(),
+            "units": "standard",  # Uses standard units (F, inches, etc.)
+            "limit": self.page_limit,
+        }
+        
+        all_data = []
+        offset = 1
+        page_count = 0
+        
+        while True:
+            page_count += 1
+            params["offset"] = offset
+            try:
+                logger.debug(f"Making API request with offset {offset} (page {page_count})")
+                response = requests.get(self.base_url, headers=headers, params=params, timeout=timeout)
+                
+                response.raise_for_status()
+                data = response.json()
+                
+                results = data.get("results", [])
+                if not results:
+                    logger.debug("No results found in response")
+                    break
+                    
+                all_data.extend(results)
+                logger.debug(f"Page {page_count} has {len(results)} records")
+                
+                if len(results) < self.page_limit:
+                    logger.debug(f"End of pagination reached after {page_count} pages")
+                    break
+                    
+                offset += self.page_limit
+                
+                # Respect rate limits with a small delay
+                time.sleep(0.5)
+                
+            except requests.exceptions.RequestException as e:
+                logger.error(f"API request failed: {str(e)}")
+                # Return partial data if we've already got some
+                if all_data:
+                    logger.warning(f"Returning partial data ({len(all_data)} records)")
+                    break
+                return pd.DataFrame()
+        
+        if not all_data:
+            logger.warning(f"No data found for period {start_date} to {end_date}")
+            return pd.DataFrame()
+            
+        # Process the data
+        # First, pivot the data to create a row for each date with columns for each data type
+        processed_data = {}
+        
+        for item in all_data:
+            date_str = item["date"]
+            datatype = item["datatype"]
+            value = item["value"]
+            
+            if date_str not in processed_data:
+                processed_data[date_str] = {"DATE": date_str}
+                
+            processed_data[date_str][datatype] = value
+        
+        # Convert to DataFrame
+        df = pd.DataFrame(list(processed_data.values()))
+        
+        # Convert values to appropriate units (PRCP is in tenths of inches, temperatures in tenths of degrees F)
+        if "PRCP" in df.columns:
+            df["PRCP"] = df["PRCP"] / 10.0  # Convert to inches
+        
+        for temp_col in ["TMAX", "TMIN", "TAVG"]:
+            if temp_col in df.columns:
+                df[temp_col] = df[temp_col] / 10.0  # Convert to degrees F
+        
+        # Sort by date
+        df["DATE"] = pd.to_datetime(df["DATE"])
+        df = df.sort_values("DATE")
+        
+        logger.info(f"Created daily weather DataFrame with {len(df)} days of data")
+        return df 
