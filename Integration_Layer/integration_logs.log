@@ -1,0 +1,710 @@
+2025-04-22 10:03:57,434 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 10:03:57,434 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 10:04:01,502 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5194560>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 199, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 789, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 495, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 441, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 279, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 214, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000194C5194560>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 843, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5194560>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5194560>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 10:04:01,516 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 10:04:05,596 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5F10B00>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 199, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 789, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 495, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 441, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 279, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 214, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000194C5F10B00>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 843, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5F10B00>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000194C5F10B00>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 10:38:47,636 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 10:38:47,636 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 10:38:51,723 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EA72D2B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 199, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 789, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 495, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 441, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 279, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 214, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000238EA72D2B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 843, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EA72D2B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EA72D2B0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 10:38:51,727 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 10:38:55,800 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EAE98950>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 199, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 789, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 495, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 441, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1331, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1091, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\Lib\http\client.py", line 1035, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 279, in connect
+    self.sock = self._new_conn()
+                ^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connection.py", line 214, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x00000238EAE98950>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\connectionpool.py", line 843, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EAE98950>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shubh\anaconda3\Lib\site-packages\requests\adapters.py", line 700, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x00000238EAE98950>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 11:21:53,035 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 11:21:53,035 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 11:21:55,078 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 11:21:55,078 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 11:21:57,122 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 11:24:14,032 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 11:24:14,032 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 11:24:16,071 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 11:24:16,071 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 11:24:18,106 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 13:40:54,241 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 13:40:54,241 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 13:40:56,304 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 13:40:56,304 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 13:40:58,344 - __main__ - ERROR - Anomaly model request failed with status 404: {"detail":"Not Found"}
+2025-04-22 13:42:52,588 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 13:42:52,588 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 13:42:55,963 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 13:42:55,963 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 13:42:58,088 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 13:42:58,088 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 13:43:01,631 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 13:43:01,631 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 13:43:03,701 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 14:21:32,678 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 14:21:32,678 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 14:21:35,934 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 14:21:35,934 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 14:21:38,009 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 14:21:38,009 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 14:21:41,380 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 14:21:41,380 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 14:21:43,463 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 14:44:42,271 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 14:44:42,271 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 14:44:46,390 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9207B4C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1278, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1038, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 976, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000024A9207B4C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9207B4C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 519, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9207B4C0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 14:44:46,406 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 14:44:50,494 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9214C220>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 198, in _new_conn
+    sock = connection.create_connection(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\connection.py", line 85, in create_connection
+    raise err
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\connection.py", line 73, in create_connection
+    sock.connect(sa)
+ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 493, in _make_request
+    conn.request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 445, in request
+    self.endheaders()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1278, in endheaders
+    self._send_output(message_body, encode_chunked=encode_chunked)
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1038, in _send_output
+    self.send(msg)
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 976, in send
+    self.connect()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 276, in connect
+    self.sock = self._new_conn()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 213, in _new_conn
+    raise NewConnectionError(
+urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object at 0x0000024A9214C220>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9214C220>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 48, in get_anomaly_prediction
+    response = requests.post(endpoint, json=payload)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 519, in send
+    raise ConnectionError(e, request=request)
+requests.exceptions.ConnectionError: HTTPConnectionPool(host='localhost', port=8000): Max retries exceeded with url: /predict_simple (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x0000024A9214C220>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+2025-04-22 15:20:16,146 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 15:20:16,146 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 15:20:19,257 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 15:20:19,260 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 15:20:21,326 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 15:20:21,326 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 15:20:24,292 - __main__ - INFO - Received anomaly prediction: 3.6103954315185547
+2025-04-22 15:20:24,300 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 15:20:26,342 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"'wind_speed_mean'"}
+2025-04-22 16:37:42,869 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 16:37:42,869 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 16:37:45,902 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 16:37:45,904 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 16:37:48,031 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 16:37:48,031 - __main__ - INFO - Combined prediction: 4.156584779548645 (weights: anomaly=0.5, precipitation=0.5)
+2025-04-22 16:37:48,031 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 16:37:51,013 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 16:37:51,023 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 16:37:53,100 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 16:37:53,100 - __main__ - INFO - Combined prediction: 4.120181735458374 (weights: anomaly=0.6, precipitation=0.4)
+2025-04-22 16:42:36,255 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 16:42:36,255 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 16:42:39,749 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 16:42:39,749 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 16:42:41,840 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 16:42:41,840 - __main__ - INFO - Combined prediction: 4.156584779548645 (weights: anomaly=0.5, precipitation=0.5)
+2025-04-22 16:42:41,853 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 16:42:44,791 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 16:42:44,799 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 16:42:46,871 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 16:42:46,871 - __main__ - INFO - Combined prediction: 4.120181735458374 (weights: anomaly=0.6, precipitation=0.4)
+2025-04-22 16:51:41,252 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 16:51:41,252 - __main__ - INFO - Requesting anomaly prediction for 2025-05
+2025-04-22 16:51:46,823 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 16:51:46,823 - __main__ - INFO - Requesting precipitation prediction for 2025-05
+2025-04-22 16:52:27,260 - __main__ - ERROR - precipitation model request failed with status 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:01:58,558 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:01:58,558 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 17:02:01,921 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 17:02:01,937 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 17:02:04,357 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 17:02:04,358 - __main__ - INFO - Requesting market model forecast
+2025-04-22 17:02:07,001 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 17:32:26,072 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:32:26,072 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 17:32:30,993 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 17:32:43,063 - __main__ - ERROR - Error getting precipitation prediction: HTTPConnectionPool(host='localhost', port=8001): Read timed out. (read timeout=10)
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 516, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1375, in getresponse
+    response.begin()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\shubh\anaconda3\lib\socket.py", line 717, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=8001): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 60, in get_precipitation_prediction
+    resp = requests.post(endpoint, json=payload, timeout=10)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 532, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPConnectionPool(host='localhost', port=8001): Read timed out. (read timeout=10)
+2025-04-22 17:36:26,885 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:36:26,885 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 17:36:38,990 - __main__ - ERROR - Error getting anomaly prediction: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 534, in _make_request
+    response = conn.getresponse()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connection.py", line 516, in getresponse
+    httplib_response = super().getresponse()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 1375, in getresponse
+    response.begin()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 318, in begin
+    version, status, reason = self._read_status()
+  File "C:\Users\shubh\anaconda3\lib\http\client.py", line 279, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "C:\Users\shubh\anaconda3\lib\socket.py", line 717, in readinto
+    return self._sock.recv_into(b)
+TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 486, in send
+    resp = conn.urlopen(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\retry.py", line 474, in increment
+    raise reraise(type(error), error, _stacktrace)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\util\util.py", line 39, in reraise
+    raise value
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 787, in urlopen
+    response = self._make_request(
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 536, in _make_request
+    self._raise_timeout(err=e, url=url, timeout_value=read_timeout)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\urllib3\connectionpool.py", line 367, in _raise_timeout
+    raise ReadTimeoutError(
+urllib3.exceptions.ReadTimeoutError: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 46, in get_anomaly_prediction
+    resp = requests.post(endpoint, json=payload, timeout=10)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 115, in post
+    return request("post", url, data=data, json=json, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\api.py", line 59, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\adapters.py", line 532, in send
+    raise ReadTimeout(e, request=request)
+requests.exceptions.ReadTimeout: HTTPConnectionPool(host='localhost', port=8000): Read timed out. (read timeout=10)
+2025-04-22 17:36:38,990 - __main__ - INFO - [Attempt 1] Requesting precipitation prediction for 2025-04
+2025-04-22 17:36:49,356 - __main__ - ERROR - HTTP error from precipitation model: 500 Server Error: Internal Server Error for url: http://localhost:8001/predict
+2025-04-22 17:36:49,356 - __main__ - ERROR - Failed all attempts to fetch precipitation prediction
+2025-04-22 17:38:06,782 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:38:06,782 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 17:38:13,472 - __main__ - INFO - [Attempt 1] Requesting precipitation prediction for 2025-04
+2025-04-22 17:38:54,011 - __main__ - WARNING - Error on precipitation model attempt 1: 500 Server Error: Internal Server Error for url: http://localhost:8001/predict
+2025-04-22 17:38:55,012 - __main__ - INFO - [Attempt 2] Requesting precipitation prediction for 2025-04
+2025-04-22 17:39:36,007 - __main__ - WARNING - Error on precipitation model attempt 2: 500 Server Error: Internal Server Error for url: http://localhost:8001/predict
+2025-04-22 17:39:38,010 - __main__ - INFO - [Attempt 3] Requesting precipitation prediction for 2025-04
+2025-04-22 17:39:48,490 - __main__ - WARNING - Error on precipitation model attempt 3: 500 Server Error: Internal Server Error for url: http://localhost:8001/predict
+2025-04-22 17:39:52,491 - __main__ - ERROR - Failed all attempts to fetch precipitation prediction
+2025-04-22 17:44:48,345 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:45:03,473 - __main__ - ERROR - Precip HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:45:28,989 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:45:43,756 - __main__ - ERROR - Precip HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:46:36,890 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:46:36,890 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 17:46:40,166 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 17:46:40,166 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 17:46:42,560 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 17:46:42,560 - __main__ - INFO - Requesting market model forecast
+2025-04-22 17:46:45,286 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 17:48:44,300 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:48:59,100 - __main__ - ERROR - Precip HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:49:43,548 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:49:43,548 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 17:49:48,033 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 17:49:48,033 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 17:50:28,989 - __main__ - ERROR - Precipitation model HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:51:40,300 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:51:40,300 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 17:51:45,221 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 17:51:45,221 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 17:52:56,070 - __main__ - ERROR - Precipitation model HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 17:53:35,769 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:53:35,769 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 17:53:39,028 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 17:53:39,028 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 17:53:41,423 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 17:53:41,423 - __main__ - INFO - Requesting market model forecast
+2025-04-22 17:53:44,073 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 17:57:50,176 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 17:57:50,176 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 17:57:53,571 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 17:57:53,571 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 17:57:55,650 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 17:57:55,650 - __main__ - INFO - Requesting market model forecast
+2025-04-22 17:57:58,282 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:11:59,025 - __main__ - INFO - ModelIntegrator initialized:
+  anomaly @ http://localhost:8000
+  precip  @ http://localhost:8001
+  market  @ http://localhost:8002
+2025-04-22 18:12:14,096 - __main__ - ERROR - Precipitation model failed
+Traceback (most recent call last):
+  File "C:\Users\shubh\OneDrive\Desktop\Enterprise\ReTune\Integration_Layer\model_integration.py", line 81, in get_precipitation_prediction
+    r.raise_for_status()
+  File "C:\Users\shubh\anaconda3\lib\site-packages\requests\models.py", line 1021, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 500 Server Error: Internal Server Error for url: http://localhost:8001/predict
+2025-04-22 18:13:56,899 - __main__ - INFO - Initialized ModelIntegrator with:
+  anomaly @ http://localhost:8000
+  precip  @ http://localhost:8001
+  market  @ http://localhost:8002
+2025-04-22 18:13:56,899 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 18:14:02,241 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 18:14:02,241 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 18:14:12,673 - __main__ - ERROR - Precipitation model HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 18:14:53,341 - __main__ - INFO - Initialized ModelIntegrator with:
+  anomaly @ http://localhost:8000
+  precip  @ http://localhost:8001
+  market  @ http://localhost:8002
+2025-04-22 18:14:53,341 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 18:14:57,830 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 18:14:57,830 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 18:15:08,234 - __main__ - ERROR - Precipitation model HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 18:21:11,776 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:21:11,776 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 18:21:14,982 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 18:21:14,982 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 18:21:17,393 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 18:21:17,393 - __main__ - INFO - Requesting market model forecast
+2025-04-22 18:21:20,063 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:21:20,063 - __main__ - INFO - Placing trade: side=NO, count=10
+2025-04-22 18:21:21,353 - __main__ - INFO - Order submitted:
+2025-04-22 18:26:28,152 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:26:28,152 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 18:26:31,395 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 18:26:31,395 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 18:26:33,489 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 18:26:33,489 - __main__ - INFO - Requesting market model forecast
+2025-04-22 18:26:36,131 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:26:36,131 - __main__ - INFO - Placing MARKET trade: side=NO, count=10
+2025-04-22 18:26:37,183 - __main__ - INFO - Order submitted:
+2025-04-22 18:32:02,865 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:32:02,865 - __main__ - INFO - Requesting anomaly prediction for 2025-04
+2025-04-22 18:32:08,073 - __main__ - INFO - Received anomaly prediction: 3.4000611305236816
+2025-04-22 18:32:08,073 - __main__ - INFO - Requesting precipitation prediction for 2025-04
+2025-04-22 18:32:18,768 - __main__ - ERROR - Precipitation model HTTP 500: {"detail":"No objects to concatenate"}
+2025-04-22 18:32:42,417 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:32:42,417 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 18:32:45,755 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 18:32:45,755 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 18:32:47,826 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 18:32:47,826 - __main__ - INFO - Requesting market model forecast
+2025-04-22 18:32:50,627 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:32:50,631 - __main__ - INFO - Placing MARKET trade: side=NO, count=10
+2025-04-22 18:32:51,704 - __main__ - INFO - Order submitted:
+2025-04-22 18:33:19,410 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:33:19,410 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 18:33:22,905 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 18:33:22,905 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 18:33:25,332 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 18:33:25,332 - __main__ - INFO - Requesting market model forecast
+2025-04-22 18:33:27,934 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:33:27,934 - __main__ - INFO - Placing MARKET trade: side=NO, count=10
+2025-04-22 18:33:29,035 - __main__ - INFO - Order submitted:
+2025-04-22 18:47:03,695 - __main__ - INFO - Initialized ModelIntegrator with anomaly at http://localhost:8000, precip at http://localhost:8001, market at http://localhost:8002
+2025-04-22 18:47:03,695 - __main__ - INFO - Requesting anomaly prediction for 2025-03
+2025-04-22 18:47:06,797 - __main__ - INFO - Received anomaly prediction: 2.938957452774048
+2025-04-22 18:47:06,797 - __main__ - INFO - Requesting precipitation prediction for 2025-03
+2025-04-22 18:47:09,196 - __main__ - INFO - Received precipitation prediction: 4.4161
+2025-04-22 18:47:09,196 - __main__ - INFO - Requesting market model forecast
+2025-04-22 18:47:11,883 - __main__ - INFO - Received market forecast: 0.33874309062957764
+2025-04-22 18:47:11,883 - __main__ - INFO - Placing MARKET trade: side=NO, count=10
+2025-04-22 18:47:13,025 - __main__ - INFO - Order submitted:

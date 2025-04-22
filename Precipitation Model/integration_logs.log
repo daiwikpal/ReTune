@@ -1,0 +1,11 @@
+2025-04-22 15:49:37,504 - __main__ - INFO - Initialized ModelIntegrator with anomaly model at http://localhost:8000
+2025-04-22 15:49:37,504 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 15:49:40,438 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 15:49:40,438 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 15:49:42,812 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 15:49:42,812 - __main__ - INFO - Combined prediction: 4.156584779548645 (weights: anomaly=0.5, precipitation=0.5)
+2025-04-22 15:49:42,814 - __main__ - INFO - Requesting anomaly prediction for 2023-05
+2025-04-22 15:49:45,747 - __main__ - INFO - Received anomaly prediction: 3.97456955909729
+2025-04-22 15:49:45,747 - __main__ - INFO - Requesting precipitation prediction for 2023-05
+2025-04-22 15:49:47,815 - __main__ - INFO - Received precipitation prediction: 4.3386
+2025-04-22 15:49:47,815 - __main__ - INFO - Combined prediction: 4.120181735458374 (weights: anomaly=0.6, precipitation=0.4)
