@@ -1,6 +1,7 @@
-# NYC Precipitation Data Collection
 
-This project collects weather data from multiple sources to train an LSTM model for predicting monthly precipitation in New York City, which will be used for a final meta model and eventually be integrated into a sytem to place weather event bets on Kalshi. 
+# ReTune Project
+
+This project collects and integrates environmental and market data from multiple sources to power predictive models for weather forecasting, anomaly detection, and Kalshi event market predictions. The final meta model combines outputs from individual models and executes trades automatically via Kalshi’s API.
 
 ## Data Sources
 
@@ -10,14 +11,17 @@ This project collects weather data from multiple sources to train an LSTM model 
 
 ## Project Structure
 
-- `weather_data/`: Module for interacting with weather APIs
-  - `noaa_client.py`: Client for NOAA API
-  - `openweather_client.py`: Client for OpenWeatherMap API
-  - `ncei_client.py`: Client for NCEI Global Hourly Data
-  - `data_processor.py`: Processes and combines data from different sources
-- `main.py`: Main script to run the data collection and processing
-- `config.py`: Configuration settings for the project
-- `model.py`: LSTM model for precipitation prediction
+- `Integration_Layer/`: Modules for interacting with weather and market APIs and has Trade logic and Kalshi API interaction for placing market bets 
+  - `noaa_client.py`: Client for NOAA API  
+  - `openweather_client.py`: Client for OpenWeatherMap API  
+  - `ncei_client.py`: Client for NCEI Global Hourly Data  
+  - `data_processor.py`: Processes and combines data from different sources  
+- `Precipitation Model/`: LSTM model for predicting monthly precipitation  
+- `Market Model/`: LSTM model for detecting Kalshi market pricing trends  
+- `Anomaly Model/`: Model to identify extreme or anomalous weather patterns  
+- `main.py`: Main script to run the data pipeline  
+- `config.py`: Configuration settings for API keys, paths, and constants  
+- `integration_logs.log`: Log file tracking API and model integration status  
 
 ## Setup
 
@@ -39,4 +43,5 @@ This project collects weather data from multiple sources to train an LSTM model 
 
 ## Output
 
-The script will generate a CSV file with processed weather data ready for training the LSTM model.
+The script will generate CSV files containing processed weather and market data, which are ready to be used as input for model training and Kalshi market integration.
+
